@@ -24,3 +24,11 @@ export const syncClerkUser = async (
     },
   });
 };
+
+export const fetchClerkUser = async (clerkId: string) => {
+  return await prisma.users.findUnique({
+    where: {
+      clerkId,
+    },
+  });
+};

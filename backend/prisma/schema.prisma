@@ -15,27 +15,20 @@ datasource db {
 
 model users {
   id              String    @id @default(uuid())
-  clerkId         String
+  clerkId         String    @unique
   name            String
   email           String    @unique
   profile_picture String?
   user_type       UserType?
   approval        Boolean   @default(false)
-
-  worker workers[]
-
-  created_at DateTime @default(now())
+  created_at      DateTime  @default(now())
 }
 
 model workers {
-  id            String @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   daily_payment Float
-
-  userId String?
-  user   users?  @relation(fields: [userId], references: [id])
-
-  created_at DateTime @default(now())
+  created_at    DateTime @default(now())
 }
 
 enum UserType {
