@@ -14,13 +14,13 @@ datasource db {
 }
 
 model users {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   clerkId         String
   name            String
-  email           String   @unique
+  email           String    @unique
   profile_picture String?
-  user_type       UserType
-  approval        Boolean  @default(false)
+  user_type       UserType?
+  approval        Boolean   @default(false)
 
   worker workers[]
 

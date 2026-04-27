@@ -1,4 +1,3 @@
-import { UserType } from "@prisma/client";
 import prisma from "../../lib/prisma.orm";
 
 export const syncClerkUser = async (
@@ -6,7 +5,6 @@ export const syncClerkUser = async (
   name: string,
   email: string,
   profilePicture: string,
-  userType: UserType,
 ) => {
   const existing = await prisma.users.findUnique({
     where: {
@@ -22,7 +20,6 @@ export const syncClerkUser = async (
       name: name,
       email: email,
       profile_picture: profilePicture,
-      user_type: userType,
     },
   });
 };

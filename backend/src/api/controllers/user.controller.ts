@@ -3,8 +3,8 @@ import { AppError } from "../../middleware/error.middleware";
 import { syncClerkUser } from "../services/user.service";
 
 export const syncClerkUserController = async (req: Request, res: Response) => {
-  const { clerkId, name, email, profilePicture, userType } = req.body;
-  const data = { clerkId, name, email, userType };
+  const { clerkId, name, email, profilePicture } = req.body;
+  const data = { clerkId, name, email };
 
   if (!data) {
     console.log("Required fields are missing");
