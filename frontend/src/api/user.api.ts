@@ -14,3 +14,11 @@ export const syncUserToDBAPI = async (
     profilePicture,
   });
 };
+
+export const fetchProfileAPI = async (token: string) => {
+  return await axios.get(`${apiUrl}/users/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -25,10 +25,10 @@ export const syncClerkUser = async (
   });
 };
 
-export const fetchClerkUser = async (clerkId: string) => {
+export const fetchClerkUser = async (userId: string) => {
   return await prisma.users.findUnique({
     where: {
-      clerkId,
+      clerkId: userId,
     },
   });
 };
