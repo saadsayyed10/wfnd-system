@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { syncClerkUser } from "../services/user.service";
+import { AppError } from "../../middleware/error.middleware";
 
 export const syncClerkUserController = async (req: Request, res: Response) => {
   const { clerkId, name, email, profilePicture } = req.body;
@@ -12,10 +13,15 @@ export const syncClerkUserController = async (req: Request, res: Response) => {
 
   try {
     const user = await syncClerkUser(clerkId, name, email, profilePicture);
-
     res.status(201).json({ message: "User synced", user });
   } catch (error: any) {
     console.log(error.message);
-    return res.status(500).json({ error: error.message });
+    console.log("Is AppError:", error instanceof AppError);
+    console.log("Error name:", error.constructor.name);
+    console.log("Error message:", error.message);
+    const status = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    return res.status(status).json({ error: message });
   }
 };

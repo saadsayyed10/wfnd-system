@@ -1,4 +1,5 @@
 import prisma from "../../lib/prisma.orm";
+import { AppError } from "../../middleware/error.middleware";
 
 export const syncClerkUser = async (
   clerkId: string,
@@ -12,7 +13,7 @@ export const syncClerkUser = async (
     },
   });
 
-  if (existing) throw new Error("User account already exists");
+  if (existing) throw new AppError("User account already exists", 500);
 
   return await prisma.users.create({
     data: {
