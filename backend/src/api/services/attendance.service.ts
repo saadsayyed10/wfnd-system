@@ -17,7 +17,7 @@ export const createDay = async () => {
 export const fetchDay = async (date: string) => {
   return await prisma.attendance.findMany({
     where: {
-      date,
+      date: new Date(date),
     },
     select: {
       workerId: true,
