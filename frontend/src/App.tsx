@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
 import Workers from "./pages/Workers";
+import Attendance from "./pages/Attendance";
 
 const App = () => {
   const { isSignedIn, isLoaded } = useAuth();
@@ -21,6 +22,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/workers" element={<Workers />} />
+        <Route path="/attendance" element={<Attendance />} />
       </Routes>
     </BrowserRouter>
   ) : (

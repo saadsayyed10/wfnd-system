@@ -6,7 +6,7 @@ const Navbar = () => {
       <h1 className="lg:text-4xl font-bold">WFND</h1>
       <div className="lg:flex hidden justify-center items-center w-full gap-x-12">
         <Link to={"/"}>Home</Link>
-        <Link to={"/"}>Attendance</Link>
+        <Link to={"/attendance"}>Attendance</Link>
         <Link to={"/workers"}>Workers</Link>
         <Link to={"/"}>Pay slips</Link>
       </div>
