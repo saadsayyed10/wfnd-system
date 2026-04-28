@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { createDayController } from "../controllers/attendance.controller";
+import {
+  createDayController,
+  fetchDayController,
+} from "../controllers/attendance.controller";
 
 const attendanceRoutes = Router();
 
 attendanceRoutes.post("/create-day", createDayController);
+attendanceRoutes.get("/day", fetchDayController);
 
 export default attendanceRoutes;

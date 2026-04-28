@@ -13,3 +13,11 @@ export const createDay = async () => {
     data: attendanceData,
   });
 };
+
+export const fetchDay = async (date: string) => {
+  return await prisma.attendance.findMany({
+    where: {
+      date,
+    },
+  });
+};
