@@ -36,7 +36,7 @@ model attendance {
   id     String         @id @default(uuid())
   login  String?
   logout String?
-  date   DateTime       @default(now())
+  date   DateTime       @unique @default(now())
   type   AttendanceType @default(ABSENT)
 
   workerId String?
