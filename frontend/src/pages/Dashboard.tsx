@@ -1,8 +1,8 @@
+import Navbar from "@/_components/Navbar";
 import { syncUserToDBAPI } from "@/api/user.api";
 import { Button } from "@/components/ui/button";
 import { SignOutButton, useUser } from "@clerk/react";
 import { useEffect } from "react";
-import Navbar from "./Navbar";
 
 const Dashboard = () => {
   const { user } = useUser();

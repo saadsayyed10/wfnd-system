@@ -1,8 +1,8 @@
 import { useAuth } from "@clerk/react";
 import { Loader2 } from "lucide-react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./_components/Dashboard";
-import Landing from "./_components/Landing";
+import Dashboard from "./pages/Dashboard";
+import Landing from "./pages/Landing";
 
 const App = () => {
   const { isSignedIn, isLoaded } = useAuth();
