@@ -30,6 +30,12 @@ export const syncClerkUserController = async (req: Request, res: Response) => {
 export const fetchClerkUserController = async (req: Request, res: Response) => {
   const { userId } = getAuth(req);
 
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ error: "Unauthorized: No logged in user found" });
+  }
+
   try {
     const user = await fetchClerkUser(userId!);
     res.status(200).json({ user });
