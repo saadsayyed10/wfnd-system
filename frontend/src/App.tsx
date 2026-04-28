@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
+import Workers from "./pages/Workers";
 
 const App = () => {
   const { isSignedIn, isLoaded } = useAuth();
@@ -18,14 +19,8 @@ const App = () => {
   return isSignedIn ? (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              <Dashboard />
-            </div>
-          }
-        />
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/workers" element={<Workers />} />
       </Routes>
     </BrowserRouter>
   ) : (
