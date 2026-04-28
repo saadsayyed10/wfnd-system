@@ -33,11 +33,12 @@ model workers {
 }
 
 model attendance {
-  id     String         @id @default(uuid())
-  login  String?
-  logout String?
-  date   DateTime       @default(now())
-  type   AttendanceType @default(ABSENT)
+  id         String         @id @default(uuid())
+  login      String?
+  logout     String?
+  date       DateTime       @default(now())
+  type       AttendanceType @default(ABSENT)
+  totalHours Float          @default(0)
 
   workerId String?
   workers  workers? @relation(fields: [workerId], references: [id], onDelete: Cascade)
