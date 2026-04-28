@@ -25,10 +25,21 @@ model users {
 }
 
 model workers {
-  id            String   @id @default(uuid())
+  id            String       @id @default(uuid())
   name          String
   daily_payment Float
-  created_at    DateTime @default(now())
+  created_at    DateTime     @default(now())
+  attendance    attendance[]
+}
+
+model attendance {
+  id     String   @id @default(uuid())
+  login  DateTime @default(now())
+  logout DateTime
+  date   DateTime @default(now())
+
+  workerId String?
+  workers  workers? @relation(fields: [workerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 enum UserType {
