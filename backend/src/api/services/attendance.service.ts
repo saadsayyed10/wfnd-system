@@ -1,3 +1,4 @@
+import { AttendanceType } from "@prisma/client";
 import prisma from "../../lib/prisma.orm";
 
 export const createDay = async () => {
@@ -29,6 +30,18 @@ export const fetchDay = async (date: string) => {
           name: true,
         },
       },
+    },
+  });
+};
+
+export const loginWorkerAttendence = async (id: string, login: string) => {
+  return await prisma.attendance.update({
+    where: {
+      id,
+    },
+    data: {
+      login: login,
+      type: AttendanceType.PRESENT,
     },
   });
 };
