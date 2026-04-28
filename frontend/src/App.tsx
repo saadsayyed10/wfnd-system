@@ -11,7 +11,7 @@ const App = () => {
   if (!isLoaded) {
     return (
       <div className="flex justify-center items-center w-full min-h-screen">
-        <Loader2 color="blue" className="w-8 h-8 animate-spin" />
+        <Loader2 className="w-8 h-8 animate-spin" />
       </div>
     );
   }
