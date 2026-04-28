@@ -36,11 +36,11 @@ model attendance {
   id     String         @id @default(uuid())
   login  String?
   logout String?
-  date   DateTime       @unique @default(now())
+  date   DateTime       @default(now())
   type   AttendanceType @default(ABSENT)
 
   workerId String?
-  workers  workers? @relation(fields: [workerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workers  workers? @relation(fields: [workerId], references: [id], onDelete: Cascade)
 }
 
 enum AttendanceType {
