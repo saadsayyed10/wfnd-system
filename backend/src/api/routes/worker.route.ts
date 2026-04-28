@@ -11,7 +11,7 @@ const workerRoutes = Router();
 
 workerRoutes.post("/add", requireAuth(), addWorkerController);
 workerRoutes.get("/all", requireAuth(), fetchAllWorkersController);
-workerRoutes.put("/update", requireAuth(), updateWorkerController);
-workerRoutes.delete("/delete", requireAuth(), deleteWorkerController);
+workerRoutes.put("/update/:id", requireAuth(), updateWorkerController);
+workerRoutes.delete("/delete/:id", requireAuth(), deleteWorkerController);
 
 export default workerRoutes;
