@@ -19,5 +19,16 @@ export const fetchDay = async (date: string) => {
     where: {
       date,
     },
+    select: {
+      workerId: true,
+      login: true,
+      logout: true,
+      type: true,
+      workers: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
 };
