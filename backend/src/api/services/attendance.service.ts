@@ -8,3 +8,11 @@ export const loginUser = async (workerId: string, login: string) => {
     },
   });
 };
+
+export const fetchAttendancesOfADay = async (date: string) => {
+  return await prisma.attendance.findMany({
+    where: {
+      date,
+    },
+  });
+};
