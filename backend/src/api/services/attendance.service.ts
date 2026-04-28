@@ -1,18 +1,15 @@
 import prisma from "../../lib/prisma.orm";
 
-export const loginUser = async (workerId: string, login: string) => {
-  return await prisma.attendance.create({
-    data: {
-      workerId,
-      login,
-    },
-  });
-};
+export const createDay = async () => {
+  const workers = await prisma.workers.findMany();
 
-export const fetchAttendancesOfADay = async (date: string) => {
-  return await prisma.attendance.findMany({
-    where: {
-      date,
-    },
+  const attendanceData = workers.map((worker) => ({
+    workerId: worker.id,
+    login: "-",
+    logout: "-",
+  }));
+
+  return await prisma.attendance.createMany({
+    data: attendanceData,
   });
 };
