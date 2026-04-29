@@ -82,3 +82,17 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
     },
   });
 };
+
+export const changeAttendenceStatus = async (
+  id: string,
+  type: AttendanceType,
+) => {
+  return await prisma.attendance.update({
+    where: {
+      id,
+    },
+    data: {
+      type,
+    },
+  });
+};
