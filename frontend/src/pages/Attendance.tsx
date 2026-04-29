@@ -1,5 +1,6 @@
 import Navbar from "@/_components/Navbar";
 import {
+  changeAttendanceStatusAPI,
   fetchCurrentDayAPI,
   loginWorkerAPI,
   logoutWorkerAPI,
@@ -75,6 +76,10 @@ const Attendance = () => {
   const [minute, setMinute] = useState("");
   const [meridiem, setMeridiem] = useState("");
 
+  const [type, setType] = useState("");
+
+  const [search, setSearch] = useState("");
+
   const fetchAttendences = async () => {
     try {
       const token = await getToken();
@@ -132,9 +137,32 @@ const Attendance = () => {
     }
   };
 
+  const handleChangeStatus = async (id: string) => {
+    if (!type) {
+      alert("Please select status to change");
+      return;
+    }
+    setLoading(true);
+    try {
+      const token = await getToken();
+
+      await changeAttendanceStatusAPI(id, type, token);
+      setType("");
+    } catch (error: any) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+      fetchAttendences();
+    }
+  };
+
   useEffect(() => {
     fetchAttendences();
   }, []);
+
+  const filteredAttendance = attendances.filter((attendance) =>
+    attendance.workers.name.toLocaleLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <>
@@ -143,7 +171,12 @@ const Attendance = () => {
         <div className="flex justify-between items-center w-full">
           <div className="flex justify-start items-center lg:gap-x-2 gap-x-1">
             <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-            <Input className="w-62" placeholder="Search worker..." />
+            <Input
+              className="w-62"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search worker..."
+            />
           </div>
 
           <div className="flex items-center lg:gap-x-2 gap-x-1 ml-auto">
@@ -186,7 +219,7 @@ const Attendance = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              attendances.map((attendance, idx) => (
+              filteredAttendance.map((attendance, idx) => (
                 <TableRow key={attendance.workerId}>
                   <TableCell>{idx + 1}</TableCell>
                   <TableCell>{attendance.workers.name}</TableCell>
@@ -351,7 +384,7 @@ const Attendance = () => {
                               </DialogDescription>
                             </DialogHeader>
 
-                            <Select>
+                            <Select value={type} onValueChange={setType}>
                               <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select Attendance Status" />
                               </SelectTrigger>
@@ -374,7 +407,7 @@ const Attendance = () => {
                               <Button
                                 disabled={loading}
                                 onClick={async () => {
-                                  // await updateWorker(worker.id);
+                                  await handleChangeStatus(attendance.id);
                                   setStatusOpen(false);
                                 }}
                               >
