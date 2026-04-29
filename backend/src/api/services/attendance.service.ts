@@ -1,5 +1,6 @@
 import { AttendanceType } from "@prisma/client";
 import prisma from "../../lib/prisma.orm";
+import { getTotalHours } from "../../lib/total-hour";
 
 export const createDay = async () => {
   const workers = await prisma.workers.findMany();
@@ -44,6 +45,40 @@ export const loginWorkerAttendence = async (id: string, login: string) => {
     data: {
       login: login,
       type: AttendanceType.PRESENT,
+    },
+  });
+};
+
+export const logoutWorkerAttendance = async (id: string, logout: string) => {
+  const attendance = await prisma.attendance.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  let type;
+  const totalHour = getTotalHours(attendance?.login!, logout);
+
+  if (totalHour < 8 && totalHour > 1) {
+    type = AttendanceType.HALFDAY;
+  }
+
+  if (totalHour == 0) {
+    type = AttendanceType.ABSENT;
+  }
+
+  if (totalHour > 8) {
+    type = AttendanceType.OVERTIME;
+  }
+
+  return await prisma.attendance.update({
+    where: {
+      id,
+    },
+    data: {
+      logout,
+      totalHours: totalHour,
+      type,
     },
   });
 };
