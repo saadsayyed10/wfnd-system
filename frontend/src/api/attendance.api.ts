@@ -15,7 +15,7 @@ export const loginWorkerAPI = async (
   token: string,
 ) => {
   return await axios.put(
-    `${apiUrl}/attendance/login/${id}`,
+    `${apiUrl}/attendance/day/login/${id}`,
     { login },
     {
       headers: {

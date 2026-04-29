@@ -21,6 +21,7 @@ export const fetchDay = async (date: string) => {
       date: new Date(date),
     },
     select: {
+      id: true,
       workerId: true,
       login: true,
       logout: true,
