@@ -24,3 +24,19 @@ export const loginWorkerAPI = async (
     },
   );
 };
+
+export const logoutWorkerAPI = async (
+  id: string,
+  logout: string,
+  token: string,
+) => {
+  return await axios.put(
+    `${apiUrl}/attendance/day/logout/${id}`,
+    { logout },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};
