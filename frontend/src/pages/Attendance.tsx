@@ -1,3 +1,4 @@
+import Navbar from "@/_components/Navbar";
 import {
   fetchCurrentDayAPI,
   loginWorkerAPI,
@@ -54,6 +55,7 @@ interface Attendances {
   logout: string;
   type: string;
   totalHours: number;
+  overtimeHours: number;
   workers: {
     name: string;
   };
@@ -62,7 +64,7 @@ interface Attendances {
 const Attendance = () => {
   const [attendances, setAttendances] = useState<Attendances[] | null>([]);
   // let currentDay = new Date().toISOString();
-  let currentDay = "2026-04-29T05:16:28.783Z";
+  let currentDay = "2026-04-29T07:12:48.470Z";
 
   const [loading, setLoading] = useState(false);
   const [loginopen, setLoginOpen] = useState(false);
@@ -135,255 +137,266 @@ const Attendance = () => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
-      <div className="flex justify-between items-center w-full">
-        <div className="flex justify-start items-center lg:gap-x-2 gap-x-1">
-          <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-          <Input className="w-62" placeholder="Search worker..." />
-        </div>
+    <>
+      <Navbar />
+      <div className="flex justify-center items-center w-full min-h-screen flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex justify-start items-center lg:gap-x-2 gap-x-1">
+            <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
+            <Input className="w-62" placeholder="Search worker..." />
+          </div>
 
-        <div className="flex items-center lg:gap-x-2 gap-x-1 ml-auto">
-          <Button variant="ghost">
-            <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-          </Button>
-          <h4 className="lg:text-lg font-semibold">
-            {new Date().toLocaleDateString("en-GB", {
-              weekday: "short",
-              day: "2-digit",
-              month: "short",
-            })}
-          </h4>
-          <Button variant="ghost">
-            <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-          </Button>
+          <div className="flex items-center lg:gap-x-2 gap-x-1 ml-auto">
+            <Button variant="ghost">
+              <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
+            </Button>
+            <h4 className="lg:text-lg font-semibold">
+              {new Date().toLocaleDateString("en-GB", {
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+              })}
+            </h4>
+            <Button variant="ghost">
+              <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
+            </Button>
+          </div>
         </div>
-      </div>
-      <Table>
-        <TableCaption>A list of attendance of all WFND Employees</TableCaption>
-        <TableHeader className="border">
-          <TableRow>
-            <TableHead>Sr No.</TableHead>
-            <TableHead>Worker</TableHead>
-            <TableHead>Login Time</TableHead>
-            <TableHead>Logout Time</TableHead>
-            <TableHead>Worked Hours</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="border">
-          {!attendances || attendances.length === 0 ? (
+        <Table>
+          <TableCaption>
+            A list of attendance of all WFND Employees
+          </TableCaption>
+          <TableHeader className="border">
             <TableRow>
-              <TableCell colSpan={6} className="text-center">
-                No attendance data found
-              </TableCell>
+              <TableHead>Sr No.</TableHead>
+              <TableHead>Worker</TableHead>
+              <TableHead>Login Time</TableHead>
+              <TableHead>Logout Time</TableHead>
+              <TableHead>Worked Hours</TableHead>
+              <TableHead>Overtime Hours</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ) : (
-            attendances.map((attendance, idx) => (
-              <TableRow key={attendance.workerId}>
-                <TableCell>{idx + 1}</TableCell>
-                <TableCell>{attendance.workers.name}</TableCell>
-                <TableCell>{attendance.login}</TableCell>
-                <TableCell>{attendance.logout}</TableCell>
-                <TableCell>{attendance.totalHours}</TableCell>
-                <TableCell>{attendance.type}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <Dialog open={loginopen} onOpenChange={setLoginOpen}>
-                        <DialogTrigger asChild>
-                          <DropdownMenuItem
-                            onSelect={(e) => e.preventDefault()}
-                          >
-                            Login
-                          </DropdownMenuItem>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm">
-                          <DialogHeader>
-                            <DialogTitle>Login Worker</DialogTitle>
-                            <DialogDescription>
-                              Sign in worker from today&apos;s attendance in
-                              your system here. Click login when you&apos;re
-                              done.
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          <div className="flex justify-start items-center w-full flex-row lg:gap-x-4 gap-x-3">
-                            <Input
-                              value={hour}
-                              onChange={(e) => setHour(e.target.value)}
-                              placeholder="Hour"
-                            />
-                            <span>:</span>
-                            <Input
-                              value={minute}
-                              onChange={(e) => setMinute(e.target.value)}
-                              placeholder="Minute"
-                            />
-
-                            <Select
-                              value={meridiem}
-                              onValueChange={setMeridiem}
-                            >
-                              <SelectTrigger className="w-full max-w-48">
-                                <SelectValue placeholder="Select Meridiem" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="AM">AM</SelectItem>
-                                <SelectItem value="PM">PM</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button
-                              disabled={loading}
-                              onClick={async () => {
-                                await handleLogin(attendance.id);
-                                setLoginOpen(false);
-                              }}
-                            >
-                              {loading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                "Login"
-                              )}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      <Dialog open={logoutopen} onOpenChange={setLogoutOpen}>
-                        <DialogTrigger asChild>
-                          <DropdownMenuItem
-                            onSelect={(e) => e.preventDefault()}
-                          >
-                            Logout
-                          </DropdownMenuItem>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm">
-                          <DialogHeader>
-                            <DialogTitle>Logout Worker</DialogTitle>
-                            <DialogDescription>
-                              Sign out worker from today&apos;s attendance in
-                              your system here. Click logout when you&apos;re
-                              done.
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          <div className="flex justify-start items-center w-full flex-row lg:gap-x-4 gap-x-3">
-                            <Input
-                              value={hour}
-                              onChange={(e) => setHour(e.target.value)}
-                              placeholder="Hour"
-                            />
-                            <span>:</span>
-                            <Input
-                              value={minute}
-                              onChange={(e) => setMinute(e.target.value)}
-                              placeholder="Minute"
-                            />
-
-                            <Select
-                              value={meridiem}
-                              onValueChange={setMeridiem}
-                            >
-                              <SelectTrigger className="w-full max-w-48">
-                                <SelectValue placeholder="Select Meridiem" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="AM">AM</SelectItem>
-                                <SelectItem value="PM">PM</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button
-                              disabled={loading}
-                              onClick={async () => {
-                                await handleLogout(attendance.id);
-                                setLogoutOpen(false);
-                              }}
-                            >
-                              {loading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                "Logout"
-                              )}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      <Dialog open={statusOpen} onOpenChange={setStatusOpen}>
-                        <DialogTrigger asChild>
-                          <DropdownMenuItem
-                            onSelect={(e) => e.preventDefault()}
-                          >
-                            Change Status
-                          </DropdownMenuItem>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm lg:h-60">
-                          <DialogHeader>
-                            <DialogTitle>Update Status</DialogTitle>
-                            <DialogDescription>
-                              Update worker&apos;s attendance status if it fails
-                              to do automatically. Click update when you&apos;re
-                              done.
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          <Select>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select Attendance Status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="PRESENT">Present</SelectItem>
-                              <SelectItem value="ABSENT">Absent</SelectItem>
-                              <SelectItem value="HALFDAY">Half Day</SelectItem>
-                              <SelectItem value="OVERTIME">Overtime</SelectItem>
-                            </SelectContent>
-                          </Select>
-
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button
-                              disabled={loading}
-                              onClick={async () => {
-                                // await updateWorker(worker.id);
-                                setStatusOpen(false);
-                              }}
-                            >
-                              {loading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                "Update"
-                              )}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+          </TableHeader>
+          <TableBody className="border">
+            {!attendances || attendances.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center">
+                  No attendance data found
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            ) : (
+              attendances.map((attendance, idx) => (
+                <TableRow key={attendance.workerId}>
+                  <TableCell>{idx + 1}</TableCell>
+                  <TableCell>{attendance.workers.name}</TableCell>
+                  <TableCell>{attendance.login}</TableCell>
+                  <TableCell>{attendance.logout}</TableCell>
+                  <TableCell>{attendance.totalHours}</TableCell>
+                  <TableCell>{attendance.overtimeHours.toFixed(2)}</TableCell>
+                  <TableCell>{attendance.type}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <Dialog open={loginopen} onOpenChange={setLoginOpen}>
+                          <DialogTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                            >
+                              Login
+                            </DropdownMenuItem>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-sm">
+                            <DialogHeader>
+                              <DialogTitle>Login Worker</DialogTitle>
+                              <DialogDescription>
+                                Sign in worker from today&apos;s attendance in
+                                your system here. Click login when you&apos;re
+                                done.
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="flex justify-start items-center w-full flex-row lg:gap-x-4 gap-x-3">
+                              <Input
+                                value={hour}
+                                onChange={(e) => setHour(e.target.value)}
+                                placeholder="Hour"
+                              />
+                              <span>:</span>
+                              <Input
+                                value={minute}
+                                onChange={(e) => setMinute(e.target.value)}
+                                placeholder="Minute"
+                              />
+
+                              <Select
+                                value={meridiem}
+                                onValueChange={setMeridiem}
+                              >
+                                <SelectTrigger className="w-full max-w-48">
+                                  <SelectValue placeholder="Select Meridiem" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="AM">AM</SelectItem>
+                                  <SelectItem value="PM">PM</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                              </DialogClose>
+                              <Button
+                                disabled={loading}
+                                onClick={async () => {
+                                  await handleLogin(attendance.id);
+                                  setLoginOpen(false);
+                                }}
+                              >
+                                {loading ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  "Login"
+                                )}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                        <Dialog open={logoutopen} onOpenChange={setLogoutOpen}>
+                          <DialogTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                            >
+                              Logout
+                            </DropdownMenuItem>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-sm">
+                            <DialogHeader>
+                              <DialogTitle>Logout Worker</DialogTitle>
+                              <DialogDescription>
+                                Sign out worker from today&apos;s attendance in
+                                your system here. Click logout when you&apos;re
+                                done.
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="flex justify-start items-center w-full flex-row lg:gap-x-4 gap-x-3">
+                              <Input
+                                value={hour}
+                                onChange={(e) => setHour(e.target.value)}
+                                placeholder="Hour"
+                              />
+                              <span>:</span>
+                              <Input
+                                value={minute}
+                                onChange={(e) => setMinute(e.target.value)}
+                                placeholder="Minute"
+                              />
+
+                              <Select
+                                value={meridiem}
+                                onValueChange={setMeridiem}
+                              >
+                                <SelectTrigger className="w-full max-w-48">
+                                  <SelectValue placeholder="Select Meridiem" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="AM">AM</SelectItem>
+                                  <SelectItem value="PM">PM</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                              </DialogClose>
+                              <Button
+                                disabled={loading}
+                                onClick={async () => {
+                                  await handleLogout(attendance.id);
+                                  setLogoutOpen(false);
+                                }}
+                              >
+                                {loading ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  "Logout"
+                                )}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                        <Dialog open={statusOpen} onOpenChange={setStatusOpen}>
+                          <DialogTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                            >
+                              Change Status
+                            </DropdownMenuItem>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-sm lg:h-60">
+                            <DialogHeader>
+                              <DialogTitle>Update Status</DialogTitle>
+                              <DialogDescription>
+                                Update worker&apos;s attendance status if it
+                                fails to do automatically. Click update when
+                                you&apos;re done.
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <Select>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Attendance Status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="PRESENT">Present</SelectItem>
+                                <SelectItem value="ABSENT">Absent</SelectItem>
+                                <SelectItem value="HALFDAY">
+                                  Half Day
+                                </SelectItem>
+                                <SelectItem value="OVERTIME">
+                                  Overtime
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                              </DialogClose>
+                              <Button
+                                disabled={loading}
+                                onClick={async () => {
+                                  // await updateWorker(worker.id);
+                                  setStatusOpen(false);
+                                }}
+                              >
+                                {loading ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  "Update"
+                                )}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 };
 

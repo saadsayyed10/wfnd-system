@@ -28,11 +28,15 @@ export const fetchDay = async (date: string) => {
       logout: true,
       type: true,
       totalHours: true,
+      overtimeHours: true,
       workers: {
         select: {
           name: true,
         },
       },
+    },
+    orderBy: {
+      id: "asc",
     },
   });
 };
@@ -57,6 +61,7 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
   });
 
   let type;
+  let overtimeHours;
   const totalHour = getTotalHours(attendance?.login!, logout);
 
   if (totalHour < 8 && totalHour > 1) {
@@ -69,6 +74,7 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
 
   if (totalHour > 8) {
     type = AttendanceType.OVERTIME;
+    overtimeHours = totalHour - 8;
   }
 
   return await prisma.attendance.update({
@@ -77,8 +83,9 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
     },
     data: {
       logout,
-      totalHours: totalHour,
+      totalHours: Number(totalHour.toFixed(2)),
       type,
+      overtimeHours,
     },
   });
 };
