@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  changeAttendenceStatus,
   createDay,
   fetchDay,
   loginWorkerAttendence,
@@ -76,6 +77,29 @@ export const logoutWorkerAttendenceController = async (
 
     const attendance = await logoutWorkerAttendance(id.toString(), logout);
     console.log(`Worker logged out`);
+    res.status(200).json({ attendance });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const changeAttendenceStatusController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { id } = req.params;
+  const { type } = req.body;
+  try {
+    const { userId } = getAuth(req);
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: No logged in user found" });
+    }
+
+    const attendance = await changeAttendenceStatus(id.toString(), type);
+    console.log(`Worker attendance status changed`);
     res.status(200).json({ attendance });
   } catch (error: any) {
     console.log(error.message);
