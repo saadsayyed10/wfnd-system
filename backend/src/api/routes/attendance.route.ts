@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  changeAttendenceStatusController,
   createDayController,
   fetchDayController,
   loginWorkerAttendenceController,
@@ -20,6 +21,11 @@ attendanceRoutes.put(
   "/day/logout/:id",
   requireAuth(),
   logoutWorkerAttendenceController,
+);
+attendanceRoutes.put(
+  "/change-status/:id",
+  requireAuth(),
+  changeAttendenceStatusController,
 );
 
 export default attendanceRoutes;
