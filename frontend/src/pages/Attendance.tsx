@@ -24,6 +24,7 @@ interface Attendances {
   login: string;
   logout: string;
   type: string;
+  totalHours: number;
   workers: {
     name: string;
   };
@@ -32,7 +33,7 @@ interface Attendances {
 const Attendance = () => {
   const [attendances, setAttendances] = useState<Attendances[] | null>([]);
   // let currentDay = new Date().toISOString();
-  let currentDay = "2026-04-28T11:16:05.999Z";
+  let currentDay = "2026-04-29T05:16:28.783Z";
 
   const fetchAttendences = async () => {
     try {
@@ -83,6 +84,7 @@ const Attendance = () => {
             <TableHead>Worker</TableHead>
             <TableHead>Login Time</TableHead>
             <TableHead>Logout Time</TableHead>
+            <TableHead>Worked Hours</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -101,6 +103,7 @@ const Attendance = () => {
                 <TableCell>{attendance.workers.name}</TableCell>
                 <TableCell>{attendance.login}</TableCell>
                 <TableCell>{attendance.logout}</TableCell>
+                <TableCell>{attendance.totalHours}</TableCell>
                 <TableCell>{attendance.type}</TableCell>
                 <TableCell>
                   <MoreHorizontal className="w-4 h-4" />

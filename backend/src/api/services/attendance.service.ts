@@ -25,6 +25,7 @@ export const fetchDay = async (date: string) => {
       login: true,
       logout: true,
       type: true,
+      totalHours: true,
       workers: {
         select: {
           name: true,

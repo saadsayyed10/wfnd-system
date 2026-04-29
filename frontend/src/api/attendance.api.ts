@@ -8,3 +8,19 @@ export const fetchCurrentDayAPI = async (date: string, token: string) => {
     },
   });
 };
+
+export const loginWorkerAPI = async (
+  id: string,
+  login: string,
+  token: string,
+) => {
+  return await axios.put(
+    `${apiUrl}/attendance/login/${id}`,
+    { login },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};
