@@ -40,3 +40,19 @@ export const logoutWorkerAPI = async (
     },
   );
 };
+
+export const changeAttendanceStatusAPI = async (
+  id: string,
+  type: string,
+  token: string,
+) => {
+  return await axios.put(
+    `${apiUrl}/attendance/change-status/${id}`,
+    { type },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};
