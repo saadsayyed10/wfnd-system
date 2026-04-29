@@ -1,4 +1,8 @@
-import { fetchCurrentDayAPI, loginWorkerAPI } from "@/api/attendance.api";
+import {
+  fetchCurrentDayAPI,
+  loginWorkerAPI,
+  logoutWorkerAPI,
+} from "@/api/attendance.api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -92,6 +96,28 @@ const Attendance = () => {
       const token = await getToken();
       const login = `${hour}:${minute} ${meridiem}`;
       await loginWorkerAPI(id, login, token);
+
+      setHour("");
+      setMinute("");
+      setMeridiem("");
+    } catch (error: any) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+      fetchAttendences();
+    }
+  };
+
+  const handleLogout = async (id: string) => {
+    if (!hour || !minute || !meridiem) {
+      alert("Please enter all the field");
+      return;
+    }
+    setLoading(true);
+    try {
+      const token = await getToken();
+      const logout = `${hour}:${minute} ${meridiem}`;
+      await logoutWorkerAPI(id, logout, token);
 
       setHour("");
       setMinute("");
@@ -286,7 +312,7 @@ const Attendance = () => {
                             <Button
                               disabled={loading}
                               onClick={async () => {
-                                // await updateWorker(worker.id);
+                                await handleLogout(attendance.id);
                                 setLogoutOpen(false);
                               }}
                             >
