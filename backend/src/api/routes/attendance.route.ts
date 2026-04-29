@@ -3,6 +3,7 @@ import {
   createDayController,
   fetchDayController,
   loginWorkerAttendenceController,
+  logoutWorkerAttendenceController,
 } from "../controllers/attendance.controller";
 import { requireAuth } from "@clerk/express";
 
@@ -14,6 +15,11 @@ attendanceRoutes.put(
   "/day/login/:id",
   requireAuth(),
   loginWorkerAttendenceController,
+);
+attendanceRoutes.put(
+  "/day/logout/:id",
+  requireAuth(),
+  logoutWorkerAttendenceController,
 );
 
 export default attendanceRoutes;
