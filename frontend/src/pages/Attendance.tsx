@@ -65,7 +65,7 @@ interface Attendances {
 const Attendance = () => {
   const [attendances, setAttendances] = useState<Attendances[] | null>([]);
   // let currentDay = new Date().toISOString();
-  let currentDay = "2026-04-29T07:12:48.470Z";
+  let currentDay = "2026-04-30T05:22:55.423Z";
 
   const [loading, setLoading] = useState(false);
   const [loginopen, setLoginOpen] = useState(false);
@@ -225,7 +225,7 @@ const Attendance = () => {
                   <TableCell>{attendance.workers.name}</TableCell>
                   <TableCell>{attendance.login}</TableCell>
                   <TableCell>{attendance.logout}</TableCell>
-                  <TableCell>{attendance.totalHours}</TableCell>
+                  <TableCell>{attendance.totalHours.toFixed(2)}</TableCell>
                   <TableCell>{attendance.overtimeHours.toFixed(2)}</TableCell>
                   <TableCell>{attendance.type}</TableCell>
                   <TableCell>
