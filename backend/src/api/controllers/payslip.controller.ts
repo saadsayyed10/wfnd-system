@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { generatePayslip } from "../services/payslips.service";
+import { fetchPayslips, generatePayslip } from "../services/payslips.service";
 
 export const generatePayslipController = async (
   req: Request,
@@ -20,5 +20,24 @@ export const generatePayslipController = async (
   } catch (error: any) {
     console.log(error.message);
     return res.status(500).json({ error: error.message });
+  }
+};
+
+export const fetchPayslipsController = async (req: Request, res: Response) => {
+  const { weekStart, weekEnd } = req.body;
+
+  const data = { weekStart, weekEnd };
+  if (!data) {
+    console.log("Required data fields are missing");
+    return res.status(404).json({ error: "Required data fields are missing" });
+  }
+
+  try {
+    const payslip = await fetchPayslips(weekStart, weekEnd);
+    console.log(JSON.stringify(payslip));
+    res.status(200).json({ payslip });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({ error: error.message });
   }
 };
