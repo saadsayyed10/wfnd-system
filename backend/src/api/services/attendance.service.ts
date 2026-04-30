@@ -2,11 +2,15 @@ import { AttendanceType } from "@prisma/client";
 import prisma from "../../lib/prisma.orm";
 import { getTotalHours } from "../../lib/total-hour";
 
-export const createDay = async () => {
+export const createDay = async (date: Date) => {
   const workers = await prisma.workers.findMany();
+
+  const splitDay = date.toString().split("T")[0];
+  const cronToday = splitDay + "T18:45:00Z";
 
   const attendanceData = workers.map((worker) => ({
     workerId: worker.id,
+    date: cronToday,
     login: "-",
     logout: "-",
   }));
