@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
 import Workers from "./pages/Workers";
 import Attendance from "./pages/Attendance";
+import Payslips from "./pages/Payslips";
 
 const App = () => {
   const { isSignedIn, isLoaded } = useAuth();
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/workers" element={<Workers />} />
         <Route path="/attendance" element={<Attendance />} />
+        <Route path="/payslips" element={<Payslips />} />
       </Routes>
     </BrowserRouter>
   ) : (
