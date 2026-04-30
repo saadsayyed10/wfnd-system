@@ -34,6 +34,9 @@ const Dashboard = () => {
       <Button asChild>
         <SignOutButton>Logout</SignOutButton>
       </Button>
+      {/* <div className="flex justify-center items-center w-full bg-black h-200">
+        <Logo />
+      </div> */}
     </div>
   );
 };
