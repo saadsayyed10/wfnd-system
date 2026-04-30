@@ -15,6 +15,13 @@ const Payslip = () => {
     <>
       <Navbar />
       <div className="flex justify-center min-h-screen items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
+        {/* <div className="flex justify-between items-center w-full">
+        <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
+          <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
+          <Input className="w-62" placeholder="Search worker..." />
+        </div>
+        <div />
+      </div> */}
         <Table>
           <TableCaption>
             Wage statement for period: 20-04-2026 to 25-04-2026

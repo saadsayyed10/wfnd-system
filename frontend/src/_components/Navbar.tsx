@@ -1,3 +1,4 @@
+import { UserButton } from "@clerk/react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -10,7 +11,7 @@ const Navbar = () => {
         <Link to={"/workers"}>Workers</Link>
         <Link to={"/payslips"}>Pay slips</Link>
       </div>
-      <div className="w-14 h-12 bg-white rounded-full" />
+      <UserButton />
     </div>
   );
 };
