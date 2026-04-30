@@ -7,12 +7,16 @@ import { useEffect } from "react";
 const Dashboard = () => {
   const { user } = useUser();
 
+  if (!user) {
+    throw new Error("Unauthorized: No user found");
+  }
+
   useEffect(() => {
     const syncClerkUser = async () => {
       try {
         await syncUserToDBAPI(
           user.id,
-          user.fullName,
+          user.fullName!,
           user.emailAddresses[0].emailAddress,
           user.imageUrl,
         );

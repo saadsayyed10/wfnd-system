@@ -63,7 +63,7 @@ interface Attendances {
 }
 
 const Attendance = () => {
-  const [attendances, setAttendances] = useState<Attendances[] | null>([]);
+  const [attendances, setAttendances] = useState<Attendances[]>([]);
   const [currentDay, setCurrentDay] = useState(new Date().toISOString());
 
   // let currentDay = "2026-04-30T05:22:55.423Z";
@@ -86,6 +86,11 @@ const Attendance = () => {
   const fetchAttendences = async () => {
     try {
       const token = await getToken();
+
+      if (!token) {
+        throw new Error("Unauthorized: No token found");
+      }
+
       console.log("Token: ", token);
 
       const res = await fetchCurrentDayAPI(currentDay, token);
@@ -105,7 +110,7 @@ const Attendance = () => {
     try {
       const token = await getToken();
       const login = `${hour}:${minute} ${meridiem}`;
-      await loginWorkerAPI(id, login, token);
+      await loginWorkerAPI(id, login, token!);
 
       setHour("");
       setMinute("");
@@ -127,7 +132,7 @@ const Attendance = () => {
     try {
       const token = await getToken();
       const logout = `${hour}:${minute} ${meridiem}`;
-      await logoutWorkerAPI(id, logout, token);
+      await logoutWorkerAPI(id, logout, token!);
 
       setHour("");
       setMinute("");
@@ -149,7 +154,7 @@ const Attendance = () => {
     try {
       const token = await getToken();
 
-      await changeAttendanceStatusAPI(id, type, token);
+      await changeAttendanceStatusAPI(id, type, token!);
       setType("");
     } catch (error: any) {
       console.log(error.message);

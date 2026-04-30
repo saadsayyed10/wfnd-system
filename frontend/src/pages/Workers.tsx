@@ -44,7 +44,7 @@ interface Workers {
 }
 
 const Workers = () => {
-  const [workers, setWorkers] = useState<Workers[] | null>([]);
+  const [workers, setWorkers] = useState<Workers[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState("");
@@ -58,6 +58,11 @@ const Workers = () => {
     setLoading(true);
     try {
       const token = await getToken();
+
+      if (!token) {
+        throw new Error("Unauthorized: No token found");
+      }
+
       const res = await fetchWorkersAPI(token);
       setWorkers(res.data.worker);
     } catch (error: any) {
@@ -79,7 +84,7 @@ const Workers = () => {
     setLoading(true);
     try {
       const token = await getToken();
-      await addWorkerAPI(name, parseFloat(dailyPayment), token);
+      await addWorkerAPI(name, parseFloat(dailyPayment), token!);
 
       setName("");
       setDailyPayment("");
@@ -95,7 +100,7 @@ const Workers = () => {
     setLoading(true);
     try {
       const token = await getToken();
-      await deleteWorkerAPI(id, token);
+      await deleteWorkerAPI(id, token!);
     } catch (error: any) {
       console.log(error.message);
     } finally {
@@ -112,7 +117,7 @@ const Workers = () => {
     setLoading(true);
     try {
       const token = await getToken();
-      await updateWorkerAPI(id, name, parseFloat(dailyPayment), token);
+      await updateWorkerAPI(id, name, parseFloat(dailyPayment), token!);
 
       setName("");
       setDailyPayment("");
