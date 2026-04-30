@@ -76,7 +76,7 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
     type = AttendanceType.ABSENT;
   }
 
-  if (totalHour > 10) {
+  if (totalHour > 11) {
     type = AttendanceType.OVERTIME;
     overtimeHours = totalHour - 10;
   }

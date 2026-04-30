@@ -2,11 +2,16 @@ import prisma from "../../lib/prisma.orm";
 
 export const generatePayslip = async (
   workerId: string,
-  weekStart: string,
-  weekEnd: string,
+  weekStart: Date,
+  weekEnd: Date,
 ) => {
-  const start = new Date(weekStart);
-  const end = new Date(weekEnd);
+  const start = weekStart.toString().split("T")[0];
+  const end = weekEnd.toString().split("T")[0];
+
+  const timeZone = "T18:45:00.000Z";
+
+  const newStart = start + timeZone;
+  const newEnd = end + timeZone;
 
   const worker = await prisma.workers.findUnique({
     where: {
@@ -20,8 +25,8 @@ export const generatePayslip = async (
     where: {
       workerId,
       date: {
-        gte: weekStart,
-        lte: weekEnd,
+        gte: newStart,
+        lte: newEnd,
       },
     },
     orderBy: {
