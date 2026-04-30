@@ -45,6 +45,14 @@ model attendance {
   workers  workers? @relation(fields: [workerId], references: [id], onDelete: Cascade)
 }
 
+model payslips {
+  id           String   @id @default(uuid())
+  total_day    Int
+  actual_day   Float
+  total_amount Float
+  created_at   DateTime @default(now())
+}
+
 enum AttendanceType {
   PRESENT
   ABSENT
