@@ -66,7 +66,7 @@ const Attendance = () => {
   const [attendances, setAttendances] = useState<Attendances[]>([]);
   const [currentDay, setCurrentDay] = useState(new Date().toISOString());
 
-  // let currentDay = "2026-04-30T05:22:55.423Z";
+  // let currentDay = "2026-04-30T07:51:00.505Z";
   // const splitDay = currentDay.split("T")[0];
   // const cronToday = splitDay + "T21:30:00.000Z";
 
@@ -93,7 +93,7 @@ const Attendance = () => {
 
       console.log("Token: ", token);
 
-      const res = await fetchCurrentDayAPI(currentDay, token);
+      const res = await fetchCurrentDayAPI("2026-04-30T07:51:00.505Z", token);
       console.log(res.data.day);
       setAttendances(res.data.day);
     } catch (error: any) {
