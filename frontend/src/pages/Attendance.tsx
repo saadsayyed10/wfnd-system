@@ -64,8 +64,11 @@ interface Attendances {
 
 const Attendance = () => {
   const [attendances, setAttendances] = useState<Attendances[] | null>([]);
-  // let currentDay = new Date().toISOString();
-  let currentDay = "2026-04-30T05:22:55.423Z";
+  const [currentDay, setCurrentDay] = useState(new Date().toISOString());
+
+  // let currentDay = "2026-04-30T05:22:55.423Z";
+  // const splitDay = currentDay.split("T")[0];
+  // const cronToday = splitDay + "T21:30:00.000Z";
 
   const [loading, setLoading] = useState(false);
   const [loginopen, setLoginOpen] = useState(false);
@@ -156,6 +159,23 @@ const Attendance = () => {
     }
   };
 
+  const goToPreviousDay = () => {
+    const prev = new Date(currentDay);
+    prev.setDate(prev.getDate() - 1);
+    setCurrentDay(prev.toISOString());
+  };
+
+  const goToNextDay = () => {
+    const today = new Date();
+
+    const next = new Date(currentDay);
+    next.setDate(next.getDate() + 1);
+
+    if (next <= today) {
+      setCurrentDay(next.toISOString());
+    }
+  };
+
   useEffect(() => {
     fetchAttendences();
   }, []);
@@ -180,18 +200,27 @@ const Attendance = () => {
           </div>
 
           <div className="flex items-center lg:gap-x-2 gap-x-1 ml-auto">
-            <Button variant="ghost">
-              <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
+            <Button variant="ghost" onClick={goToPreviousDay}>
+              <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
             </Button>
+
             <h4 className="lg:text-lg font-semibold">
-              {new Date().toLocaleDateString("en-GB", {
+              {new Date(currentDay).toLocaleDateString("en-GB", {
                 weekday: "short",
                 day: "2-digit",
                 month: "short",
               })}
             </h4>
-            <Button variant="ghost">
-              <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
+
+            <Button
+              variant="ghost"
+              onClick={goToNextDay}
+              disabled={
+                new Date(currentDay).toDateString() ===
+                new Date().toDateString()
+              }
+            >
+              <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4" />
             </Button>
           </div>
         </div>
