@@ -56,7 +56,22 @@ export const generatePayslip = async (
   });
 };
 
-export const fetchPayslips = async () => {};
+export const fetchPayslips = async (weekStart: Date, weekEnd: Date) => {
+  const start = weekStart.toString().split("T")[0];
+  const end = weekEnd.toString().split("T")[0];
+
+  const timeZone = "T18:45:00.000Z";
+
+  const newStart = start + timeZone;
+  const newEnd = end + timeZone;
+
+  return await prisma.payslips.findMany({
+    where: {
+      week_start: newStart,
+      week_end: newEnd,
+    },
+  });
+};
 
 export const convertPayslipToExcel = async () => {};
 
