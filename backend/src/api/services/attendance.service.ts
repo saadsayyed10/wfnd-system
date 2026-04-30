@@ -5,9 +5,12 @@ import { getTotalHours } from "../../lib/total-hour";
 export const createDay = async (date: Date) => {
   const workers = await prisma.workers.findMany();
 
+  const splitDay = date.toString().split("T")[0];
+  const cronToday = splitDay + "T18:45:00Z";
+
   const attendanceData = workers.map((worker) => ({
     workerId: worker.id,
-    date,
+    date: cronToday,
     login: "-",
     logout: "-",
   }));

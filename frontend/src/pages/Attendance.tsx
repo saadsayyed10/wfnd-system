@@ -67,8 +67,6 @@ const Attendance = () => {
   const [currentDay, setCurrentDay] = useState(new Date().toISOString());
 
   // let currentDay = "2026-04-30T07:51:00.505Z";
-  // const splitDay = currentDay.split("T")[0];
-  // const cronToday = splitDay + "T21:30:00.000Z";
 
   const [loading, setLoading] = useState(false);
   const [loginopen, setLoginOpen] = useState(false);
@@ -84,6 +82,7 @@ const Attendance = () => {
   const [search, setSearch] = useState("");
 
   const fetchAttendences = async () => {
+    setAttendances([]);
     try {
       const token = await getToken();
 
@@ -91,9 +90,10 @@ const Attendance = () => {
         throw new Error("Unauthorized: No token found");
       }
 
-      console.log("Token: ", token);
+      const splitDay = currentDay.split("T")[0];
+      const cronToday = splitDay + "T18:45:00.000Z";
 
-      const res = await fetchCurrentDayAPI("2026-04-30T07:51:00.505Z", token);
+      const res = await fetchCurrentDayAPI(cronToday, token);
       console.log(res.data.day);
       setAttendances(res.data.day);
     } catch (error: any) {
@@ -183,7 +183,7 @@ const Attendance = () => {
 
   useEffect(() => {
     fetchAttendences();
-  }, []);
+  }, [currentDay]);
 
   const filteredAttendance = attendances.filter((attendance) =>
     attendance.workers.name.toLocaleLowerCase().includes(search.toLowerCase()),
