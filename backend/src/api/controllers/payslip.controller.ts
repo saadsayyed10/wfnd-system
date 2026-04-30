@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { fetchPayslips, generatePayslips } from "../services/payslips.service";
+import {
+  deleteAllPayslip,
+  fetchPayslips,
+  generatePayslips,
+} from "../services/payslips.service";
 
 export const generatePayslipController = async (
   req: Request,
@@ -39,5 +43,19 @@ export const fetchPayslipsController = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.log(error.message);
     return res.status(400).json({ error: error.message });
+  }
+};
+
+export const deleteAllPayslipController = async (
+  _req: Request,
+  res: Response,
+) => {
+  try {
+    await deleteAllPayslip();
+    console.log(JSON.stringify("Deleted all payslips"));
+    res.status(204).json({ message: "Deleted all payslips" });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
   }
 };
