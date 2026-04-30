@@ -39,7 +39,7 @@ export const fetchPayslipsController = async (req: Request, res: Response) => {
   try {
     const payslip = await fetchPayslips(weekStart, weekEnd);
     console.log(JSON.stringify(payslip));
-    res.status(200).json({ payslip });
+    res.status(200).json({ totalWorker: payslip.length, payslip });
   } catch (error: any) {
     console.log(error.message);
     return res.status(400).json({ error: error.message });
