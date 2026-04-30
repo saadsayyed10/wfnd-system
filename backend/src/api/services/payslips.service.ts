@@ -1,7 +1,7 @@
 import prisma from "../../lib/prisma.orm";
 
-export const generatePayslip = async (
-  workerId: string,
+export const generatePayslips = async (
+  workerIds: string[],
   weekStart: Date,
   weekEnd: Date,
 ) => {
@@ -9,21 +9,28 @@ export const generatePayslip = async (
   const end = weekEnd.toString().split("T")[0];
 
   const timeZone = "T18:45:00.000Z";
-
   const newStart = start + timeZone;
   const newEnd = end + timeZone;
 
-  const worker = await prisma.workers.findUnique({
+  const workers = await prisma.workers.findMany({
     where: {
-      id: workerId,
+      id: { in: workerIds },
     },
   });
 
-  if (!worker) throw new Error("Worker not found");
+  if (workers.length === 0) throw new Error("No workers found");
 
-  const attendance = await prisma.attendance.findMany({
+  // Warn if some IDs were not found
+  if (workers.length !== workerIds.length) {
+    const foundIds = new Set(workers.map((w) => w.id));
+    const missingIds = workerIds.filter((id) => !foundIds.has(id));
+    console.warn(`Workers not found for IDs: ${missingIds.join(", ")}`);
+  }
+
+  // Fetch all attendance records for all workers in one query
+  const allAttendance = await prisma.attendance.findMany({
     where: {
-      workerId,
+      workerId: { in: workerIds },
       date: {
         gte: newStart,
         lte: newEnd,
@@ -34,17 +41,29 @@ export const generatePayslip = async (
     },
   });
 
-  const totalDays = attendance.filter((a) => a.type === "PRESENT").length;
+  // Group attendance by workerId
+  const attendanceByWorker = allAttendance.reduce(
+    (acc, record) => {
+      if (!acc[record.workerId!]) acc[record.workerId!] = [];
+      acc[record.workerId!].push(record);
+      return acc;
+    },
+    {} as Record<string, typeof allAttendance>,
+  );
 
-  const overtimeTotal = attendance.reduce((sum, a) => sum + a.overtimeHours, 0);
+  // Build payslip data for each worker
+  const payslipData = workers.map((worker) => {
+    const attendance = attendanceByWorker[worker.id] ?? [];
+    const totalDays = attendance.filter((a) => a.type === "PRESENT").length;
+    const overtimeTotal = attendance.reduce(
+      (sum, a) => sum + a.overtimeHours,
+      0,
+    );
+    const actualDays = totalDays + overtimeTotal;
+    const weeklyWage = actualDays * worker.daily_payment;
 
-  const actualDays = totalDays + overtimeTotal;
-
-  const weeklyWage = actualDays * worker.daily_payment;
-
-  return await prisma.payslips.create({
-    data: {
-      workersId: workerId,
+    return {
+      workersId: worker.id,
       week_start: weekStart,
       week_end: weekEnd,
       total_days: totalDays,
@@ -52,8 +71,16 @@ export const generatePayslip = async (
       overtime_total: overtimeTotal,
       weekly_wage: weeklyWage,
       payslip_data: attendance,
-    },
+    };
   });
+
+  // Use createMany with skipDuplicates to respect your @@unique constraint
+  await prisma.payslips.createMany({
+    data: payslipData,
+    skipDuplicates: true,
+  });
+
+  return payslipData;
 };
 
 export const fetchPayslips = async (weekStart: Date, weekEnd: Date) => {
