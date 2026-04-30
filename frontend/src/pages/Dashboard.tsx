@@ -3,6 +3,7 @@ import { syncUserToDBAPI } from "@/api/user.api";
 import { Button } from "@/components/ui/button";
 import { SignOutButton, useUser } from "@clerk/react";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { user } = useUser();
@@ -35,6 +36,13 @@ const Dashboard = () => {
     <div className="flex justify-center items-center w-full min-h-screen flex-col gap-y-2">
       <Navbar />
       <h1>Dashboard</h1>
+      <h1>Dashboard needs data of atleast 2 weeks to be rendered</h1>
+      <h1>Showing redirect buttons instead below...</h1>
+
+      <Link to={"/attendance"}>Attendance</Link>
+      <Link to={"/workers"}>Workers</Link>
+      <Link to={"/payslips"}>Pay slips</Link>
+
       <Button asChild>
         <SignOutButton>Logout</SignOutButton>
       </Button>
