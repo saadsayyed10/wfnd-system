@@ -115,4 +115,6 @@ export const fetchPayslips = async (weekStart: Date, weekEnd: Date) => {
 
 export const convertPayslipToExcel = async () => {};
 
-export const deletePayslip = async () => {};
+export const deleteAllPayslip = async () => {
+  return await prisma.payslips.deleteMany();
+};
