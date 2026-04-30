@@ -25,11 +25,13 @@ model users {
 }
 
 model workers {
-  id            String       @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   daily_payment Float
-  created_at    DateTime     @default(now())
-  attendance    attendance[]
+  created_at    DateTime @default(now())
+
+  attendance attendance[]
+  payslips   payslips[]
 }
 
 model attendance {
@@ -43,14 +45,25 @@ model attendance {
 
   workerId String?
   workers  workers? @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@index([workerId, date])
 }
 
 model payslips {
-  id           String   @id @default(uuid())
-  total_day    Int
-  actual_day   Float
-  total_amount Float
-  created_at   DateTime @default(now())
+  id             String   @id @default(uuid())
+  week_start     DateTime
+  week_end       DateTime
+  payslip_data   Json[]
+  total_days     Int
+  actual_days    Float
+  overtime_total Float
+  weekly_wage    Int
+  created_at     DateTime @default(now())
+  workers        workers? @relation(fields: [workersId], references: [id])
+  workersId      String?
+
+  @@unique([workersId, week_start, week_end])
+  @@index([week_start, week_end])
 }
 
 enum AttendanceType {
