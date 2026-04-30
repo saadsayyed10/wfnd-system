@@ -2,11 +2,12 @@ import { AttendanceType } from "@prisma/client";
 import prisma from "../../lib/prisma.orm";
 import { getTotalHours } from "../../lib/total-hour";
 
-export const createDay = async () => {
+export const createDay = async (date: Date) => {
   const workers = await prisma.workers.findMany();
 
   const attendanceData = workers.map((worker) => ({
     workerId: worker.id,
+    date,
     login: "-",
     logout: "-",
   }));

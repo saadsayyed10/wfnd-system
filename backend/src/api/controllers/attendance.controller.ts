@@ -8,9 +8,14 @@ import {
 } from "../services/attendance.service";
 import { getAuth } from "@clerk/express";
 
-export const createDayController = async (_req: Request, res: Response) => {
+export const createDayController = async (req: Request, res: Response) => {
+  const { date } = req.body;
+  if (!date) {
+    console.log("Date is required");
+    return res.status(404).json({ error: "Date is required" });
+  }
   try {
-    await createDay();
+    await createDay(date);
     console.log("Day created");
     res.status(201).json({ message: `Day created` });
   } catch (error: any) {
