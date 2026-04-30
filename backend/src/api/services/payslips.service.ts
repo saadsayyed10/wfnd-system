@@ -57,18 +57,31 @@ export const generatePayslip = async (
 };
 
 export const fetchPayslips = async (weekStart: Date, weekEnd: Date) => {
-  const start = weekStart.toString().split("T")[0];
-  const end = weekEnd.toString().split("T")[0];
-
-  const timeZone = "T18:45:00.000Z";
-
-  const newStart = start + timeZone;
-  const newEnd = end + timeZone;
-
   return await prisma.payslips.findMany({
     where: {
-      week_start: newStart,
-      week_end: newEnd,
+      week_start: weekStart,
+      week_end: weekEnd,
+    },
+    select: {
+      id: true,
+      payslip_data: true,
+      actual_days: true,
+      weekly_wage: true,
+      overtime_total: true,
+      total_days: true,
+      workersId: true,
+      workers: {
+        select: {
+          name: true,
+          daily_payment: true,
+        },
+      },
+      week_start: true,
+      week_end: true,
+      created_at: true,
+    },
+    orderBy: {
+      workersId: "asc",
     },
   });
 };
