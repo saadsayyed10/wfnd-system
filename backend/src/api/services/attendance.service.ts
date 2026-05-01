@@ -81,6 +81,10 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
     overtimeHours = totalHour - 10;
   }
 
+  if (type === "OVERTIME") {
+    overtimeHours = totalHour;
+  }
+
   return await prisma.attendance.update({
     where: {
       id,

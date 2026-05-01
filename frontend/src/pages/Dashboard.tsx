@@ -1,4 +1,3 @@
-import Navbar from "@/_components/Navbar";
 import { syncUserToDBAPI } from "@/api/user.api";
 import { Button } from "@/components/ui/button";
 import { SignOutButton, useUser } from "@clerk/react";
@@ -33,8 +32,7 @@ const Dashboard = () => {
     syncClerkUser();
   }, [user]);
   return (
-    <div className="flex justify-center items-center w-full min-h-screen flex-col gap-y-2">
-      <Navbar />
+    <div className="flex justify-center items-center w-full flex-col gap-y-2">
       <h1>Dashboard</h1>
       <h1>Dashboard needs data of atleast 2 weeks to be rendered</h1>
       <h1>Showing redirect buttons instead below...</h1>
