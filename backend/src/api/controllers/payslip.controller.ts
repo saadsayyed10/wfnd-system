@@ -28,20 +28,29 @@ export const generatePayslipController = async (
 };
 
 export const fetchPayslipsController = async (req: Request, res: Response) => {
-  const { weekStart, weekEnd } = req.body;
+  const { weekStart, weekEnd } = req.query;
 
-  const data = { weekStart, weekEnd };
-  if (!data) {
-    console.log("Required data fields are missing");
-    return res.status(404).json({ error: "Required data fields are missing" });
+  if (!weekStart || !weekEnd) {
+    return res
+      .status(400)
+      .json({ error: "weekStart and weekEnd are required" });
+  }
+
+  if (typeof weekStart !== "string" || typeof weekEnd !== "string") {
+    return res.status(400).json({ error: "Invalid query params" });
+  }
+
+  const startDate = new Date(weekStart);
+  const endDate = new Date(weekEnd);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    return res.status(400).json({ error: "Invalid date format" });
   }
 
   try {
-    const payslip = await fetchPayslips(weekStart, weekEnd);
-    console.log(JSON.stringify(payslip));
+    const payslip = await fetchPayslips(startDate, endDate);
     res.status(200).json({ totalWorker: payslip.length, payslip });
   } catch (error: any) {
-    console.log(error.message);
     return res.status(400).json({ error: error.message });
   }
 };
