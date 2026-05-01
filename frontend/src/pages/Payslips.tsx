@@ -86,7 +86,7 @@ const Payslip = () => {
               <TableHead>TUE</TableHead>
               <TableHead>WED</TableHead>
               <TableHead>THU</TableHead>
-              <TableHead>O/T</TableHead>
+              <TableHead>O/T Hours</TableHead>
               <TableHead>Total Days</TableHead>
               <TableHead>Actual Day</TableHead>
               <TableHead>Daily Payment</TableHead>
