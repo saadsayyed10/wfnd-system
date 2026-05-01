@@ -194,19 +194,19 @@ const Attendance = () => {
         <div className="flex justify-start items-center lg:gap-x-2 gap-x-1">
           <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
           <Input
-            className="w-62"
+            className="lg:w-62 w-44"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search worker..."
           />
         </div>
 
-        <div className="flex items-center lg:gap-x-2 gap-x-1 ml-auto">
+        <div className="flex items-center lg:gap-x-2 gap-x-0 ml-auto">
           <Button variant="ghost" onClick={goToPreviousDay}>
             <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
           </Button>
 
-          <h4 className="lg:text-lg font-semibold">
+          <h4 className="lg:text-lg text-sm font-semibold">
             {new Date(currentDay).toLocaleDateString("en-GB", {
               weekday: "short",
               day: "2-digit",
