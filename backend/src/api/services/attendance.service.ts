@@ -68,21 +68,13 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
   let overtimeHours;
   const totalHour = getTotalHours(attendance?.login!, logout);
 
-  if (totalHour <= 6) {
+  if (totalHour <= 8 && totalHour > 0) {
     type = AttendanceType.HALFDAY;
-  }
-
-  if (totalHour == 0) {
+  } else if (totalHour == 0) {
     type = AttendanceType.ABSENT;
-  }
-
-  if (totalHour > 11) {
+  } else if (totalHour > 11) {
     type = AttendanceType.OVERTIME;
     overtimeHours = totalHour - 10;
-  }
-
-  if (type === "OVERTIME") {
-    overtimeHours = totalHour;
   }
 
   return await prisma.attendance.update({
@@ -102,12 +94,25 @@ export const changeAttendenceStatus = async (
   id: string,
   type: AttendanceType,
 ) => {
+  const attendance = await prisma.attendance.findUnique({
+    where: { id },
+  });
+
+  if (!attendance) throw new Error("Attendance not found");
+
+  let newOTHours;
+
+  if (type === "OVERTIME") {
+    newOTHours = attendance.totalHours;
+  } else {
+    newOTHours = 0;
+  }
+
   return await prisma.attendance.update({
-    where: {
-      id,
-    },
+    where: { id },
     data: {
       type,
+      overtimeHours: newOTHours,
     },
   });
 };
