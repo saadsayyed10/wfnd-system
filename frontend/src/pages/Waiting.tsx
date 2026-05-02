@@ -64,7 +64,7 @@ export default function Waiting() {
               <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center shrink-0">
                 <span className="text-white text-xs font-bold">
                   <img
-                    src={user.imageUrl}
+                    src={user?.imageUrl}
                     alt="profile"
                     className="w-10 h-10 rounded-full"
                   />
@@ -75,7 +75,7 @@ export default function Waiting() {
                   Full Name
                 </p>
                 <p className="text-sm font-semibold text-gray-800 truncate">
-                  {user.firstName} {user.lastName}
+                  {user?.firstName} {user?.lastName}
                 </p>
               </div>
               <User className="w-4 h-4 text-gray-300 ml-auto shrink-0" />
@@ -91,7 +91,7 @@ export default function Waiting() {
                   Email Address
                 </p>
                 <p className="text-sm font-medium text-gray-700 truncate">
-                  {user.primaryEmailAddress.emailAddress}
+                  {user?.primaryEmailAddress?.emailAddress}
                 </p>
               </div>
             </div>

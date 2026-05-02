@@ -23,7 +23,7 @@ const Dashboard = () => {
   const fetchUser = async () => {
     try {
       const token = await getToken();
-      const res = await fetchProfileAPI(token);
+      const res = await fetchProfileAPI(token!);
       console.log(res.data.user);
       setApproval(res.data.user.approval);
       setUserType(res.data.user.user_type);
