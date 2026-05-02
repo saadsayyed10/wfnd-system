@@ -66,12 +66,13 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
 
   let type;
   let overtimeHours;
-  const totalHour = getTotalHours(attendance?.login!, logout);
+  let totalHour = getTotalHours(attendance?.login!, logout);
 
   if (totalHour <= 8 && totalHour > 0) {
     type = AttendanceType.HALFDAY;
   } else if (totalHour == 0) {
     type = AttendanceType.ABSENT;
+    totalHour = 0;
   } else if (totalHour > 11) {
     type = AttendanceType.OVERTIME;
     overtimeHours = totalHour - 10;

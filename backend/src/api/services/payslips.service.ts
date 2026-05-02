@@ -67,7 +67,7 @@ export const generatePayslips = async (
     );
 
     // 11 hrs = 1 day
-    const actualDays = totalDays + overtimeTotal / 11;
+    const actualDays = totalDays + overtimeTotal;
 
     const weeklyWage = actualDays * worker.daily_payment;
 
