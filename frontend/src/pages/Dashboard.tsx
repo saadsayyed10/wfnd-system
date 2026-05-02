@@ -8,6 +8,7 @@ import PresentWorkers from "@/_components/Dashboard/Workers/PresentWorkers";
 import TotalWorkers from "@/_components/Dashboard/Workers/TotalWorkers";
 import TotalUsers from "@/_components/Dashboard/TotalUser";
 import AbsentWorkers from "@/_components/Dashboard/Workers/AbsentWorkers";
+import FetchTodayAttendance from "@/_components/Dashboard/FetchTodayAttendance";
 
 const Dashboard = () => {
   const { user } = useUser();
@@ -72,16 +73,34 @@ const Dashboard = () => {
   }
 
   return approval ? (
-    <div className="flex justify-center items-center w-full flex-col gap-y-2">
-      <div className="flex justify-between items-center w-full px-4">
-        <div className="flex justify-start items-start w-full flex-col lg:gap-y-4">
-          <TotalWorkers totalWorkers={12} />
+    <div className="w-full flex flex-col gap-4 lg:gap-6 p-4">
+      {/* Top Section */}
+      <div
+        className="grid gap-4 
+    grid-cols-1 
+    sm:grid-cols-2 
+    lg:grid-cols-2"
+      >
+        {/* Left: Users + Workers */}
+        <div className="flex flex-col gap-4">
           <TotalUsers totalUsers={5} />
+          <TotalWorkers totalWorkers={12} />
         </div>
-        <div className="flex justify-end items-end w-full flex-row lg:gap-x-4">
-          <PresentWorkers />
-          <AbsentWorkers />
+
+        {/* Right: Present + Absent */}
+        <div className="flex flex-col sm:flex-row lg:flex-row gap-4">
+          <div className="flex-1">
+            <PresentWorkers />
+          </div>
+          <div className="flex-1">
+            <AbsentWorkers />
+          </div>
         </div>
+      </div>
+
+      {/* Bottom Section */}
+      <div className="w-full">
+        <FetchTodayAttendance />
       </div>
     </div>
   ) : (

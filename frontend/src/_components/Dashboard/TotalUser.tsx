@@ -11,7 +11,7 @@ export default function TotalUsers({ totalUsers }: UserCardProps) {
       <CardContent className="flex items-center justify-between p-2">
         {/* Left Section */}
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">Total Workers</p>
+          <p className="text-sm text-muted-foreground">Total Users</p>
           <h2 className="text-3xl font-bold tracking-tight">{totalUsers}</h2>
         </div>
 
