@@ -2,13 +2,16 @@ import { fetchProfileAPI, syncUserToDBAPI } from "@/api/user.api";
 import { useApproval } from "@/hooks/useApproval";
 import { getToken, useUser } from "@clerk/react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import Waiting from "./Waiting";
 import { Loader2 } from "lucide-react";
+import PresentWorkers from "@/_components/Dashboard/Workers/PresentWorkers";
+import TotalWorkers from "@/_components/Dashboard/Workers/TotalWorkers";
+import TotalUsers from "@/_components/Dashboard/TotalUser";
+import AbsentWorkers from "@/_components/Dashboard/Workers/AbsentWorkers";
 
 const Dashboard = () => {
   const { user } = useUser();
-  const { approval, setApproval, userType, setUserType } = useApproval();
+  const { approval, setApproval, setUserType } = useApproval();
 
   const [showWaiting, setShowWaiting] = useState(false);
 
@@ -70,15 +73,16 @@ const Dashboard = () => {
 
   return approval ? (
     <div className="flex justify-center items-center w-full flex-col gap-y-2">
-      <h1>Dashboard</h1>
-      {approval && <h1>Approved</h1>}
-      {userType && <h1>{userType}</h1>}
-      <h1>Dashboard needs data of atleast 2 weeks to be rendered</h1>
-      <h1>Showing redirect buttons instead below...</h1>
-
-      <Link to={"/attendance"}>Attendance</Link>
-      <Link to={"/workers"}>Workers</Link>
-      <Link to={"/payslips"}>Pay slips</Link>
+      <div className="flex justify-between items-center w-full px-4">
+        <div className="flex justify-start items-start w-full flex-col lg:gap-y-4">
+          <TotalWorkers totalWorkers={12} />
+          <TotalUsers totalUsers={5} />
+        </div>
+        <div className="flex justify-end items-end w-full flex-row lg:gap-x-4">
+          <PresentWorkers />
+          <AbsentWorkers />
+        </div>
+      </div>
     </div>
   ) : (
     <Waiting />
