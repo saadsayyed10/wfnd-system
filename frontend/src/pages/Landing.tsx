@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { useApproval } from "@/hooks/useApproval";
 import { SignInButton } from "@clerk/react";
+import { useEffect } from "react";
 
 const GoogleIcon = () => (
   <svg
@@ -16,6 +18,12 @@ const GoogleIcon = () => (
 );
 
 const Landing = () => {
+  const { reset } = useApproval();
+
+  useEffect(() => {
+    reset();
+  }, []);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-neutral-100">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-lg text-center space-y-6">

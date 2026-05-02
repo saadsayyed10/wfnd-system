@@ -1,4 +1,3 @@
-import Navbar from "@/_components/Navbar";
 import {
   addWorkerAPI,
   deleteWorkerAPI,
@@ -32,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useApproval } from "@/hooks/useApproval";
 import { getToken } from "@clerk/react";
 import { Loader2, MoreHorizontal, Search } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -53,6 +53,8 @@ const Workers = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [open, setOpen] = useState(false);
+
+  const { userType } = useApproval();
 
   const fetchAllWorkers = async () => {
     setLoading(true);
@@ -134,83 +136,84 @@ const Workers = () => {
   }, []);
 
   return (
-    <>
-      <Navbar />
-      <div className="flex justify-center items-center w-full min-h-screen flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
-        <div className="flex justify-between items-center w-full">
-          <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
-            <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-62"
-              placeholder="Search worker..."
-            />
-          </div>
-          <Dialog>
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
+      <div className="flex justify-between items-center w-full">
+        <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
+          <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="lg:w-62 w-44"
+            placeholder="Search worker..."
+          />
+        </div>
+        <Dialog>
+          {userType === "ADMIN" && (
             <DialogTrigger asChild>
               <Button size="lg">Add Worker</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-sm">
-              <DialogHeader>
-                <DialogTitle>Register Worker</DialogTitle>
-                <DialogDescription>
-                  Add worker to your system here. Click save when you&apos;re
-                  done.
-                </DialogDescription>
-              </DialogHeader>
+          )}
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Register Worker</DialogTitle>
+              <DialogDescription>
+                Add worker to your system here. Click save when you&apos;re
+                done.
+              </DialogDescription>
+            </DialogHeader>
 
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Name of Worker"
-              />
-              <Input
-                value={dailyPayment}
-                onChange={(e) => setDailyPayment(e.target.value)}
-                placeholder="Set Daily Payment"
-              />
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name of Worker"
+            />
+            <Input
+              value={dailyPayment}
+              onChange={(e) => setDailyPayment(e.target.value)}
+              placeholder="Set Daily Payment"
+            />
 
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button disabled={loading} onClick={addWorker}>
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    "Save changes"
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-        <Table>
-          <TableCaption>A list of all WFND Workers</TableCaption>
-          <TableHeader className="border">
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button disabled={loading} onClick={addWorker}>
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Save changes"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <Table>
+        <TableCaption>A list of all WFND Workers</TableCaption>
+        <TableHeader className="border">
+          <TableRow>
+            <TableHead>Sr No.</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Daily Payment</TableHead>
+            <TableHead>Added On</TableHead>
+            {userType === "ADMIN" && <TableHead>Actions</TableHead>}
+          </TableRow>
+        </TableHeader>
+        <TableBody className="border">
+          {filteredWorkers.length === 0 ? (
             <TableRow>
-              <TableHead>Sr No.</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Daily Payment</TableHead>
-              <TableHead>Added On</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableCell colSpan={6} className="text-center lg:py-6">
+                No workers found.
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody className="border">
-            {filteredWorkers.length === 0 ? (
+          ) : (
+            filteredWorkers.map((worker, idx) => (
               <TableRow>
-                <TableCell colSpan={6} className="text-center lg:py-6">
-                  No workers found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredWorkers.map((worker, idx) => (
-                <TableRow>
-                  <TableCell>{idx + 1}</TableCell>
-                  <TableCell>{worker.name}</TableCell>
-                  <TableCell>{worker.daily_payment}</TableCell>
-                  <TableCell>{worker.created_at.split("T")[0]}</TableCell>
+                <TableCell>{idx + 1}</TableCell>
+                <TableCell>{worker.name}</TableCell>
+                <TableCell>{worker.daily_payment}</TableCell>
+                <TableCell>{worker.created_at.split("T")[0]}</TableCell>
+                {userType === "ADMIN" && (
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger>
@@ -275,13 +278,13 @@ const Workers = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </>
+                )}
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

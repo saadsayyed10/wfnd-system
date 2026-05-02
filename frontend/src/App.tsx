@@ -6,6 +6,8 @@ import Landing from "./pages/Landing";
 import Workers from "./pages/Workers";
 import Attendance from "./pages/Attendance";
 import Payslips from "./pages/Payslips";
+import Layout from "./_components/Layout";
+import Waiting from "./pages/Waiting";
 
 const App = () => {
   const { isSignedIn, isLoaded } = useAuth();
@@ -21,10 +23,13 @@ const App = () => {
   return isSignedIn ? (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/workers" element={<Workers />} />
-        <Route path="/attendance" element={<Attendance />} />
-        <Route path="/payslips" element={<Payslips />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/workers" element={<Workers />} />
+          <Route path="/attendance" element={<Attendance />} />
+          <Route path="/payslips" element={<Payslips />} />
+        </Route>
+        <Route path="/waiting" element={<Waiting />} />
       </Routes>
     </BrowserRouter>
   ) : (
