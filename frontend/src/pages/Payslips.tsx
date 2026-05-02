@@ -5,6 +5,22 @@ import {
 } from "@/api/payslip.api";
 import { fetchWorkersAPI } from "@/api/worker.api";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -15,7 +31,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getToken } from "@clerk/react";
-import { Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { ChevronDownIcon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface PayslipData {
@@ -53,12 +70,25 @@ const Payslip = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const weekStart = "2026-04-20T10:39:40.359Z";
-  const weekEnd = "2026-04-22T10:39:40.359Z";
+  const [weekStart, setWeekStart] = useState<Date>(new Date());
+  const [weekEnd, setWeekEnd] = useState<Date>(new Date());
+
+  const addOneDay = (date: Date) => {
+    const d = new Date(date);
+    d.setDate(d.getDate() + 1);
+    return d;
+  };
 
   const fetchPayslipData = async () => {
     try {
-      const res = await fetchPayslipAPI(weekStart, weekEnd);
+      const splitWeekStart = addOneDay(weekStart).toISOString().split("T")[0];
+      const splitWeekEnd = addOneDay(weekEnd).toISOString().split("T")[0];
+
+      const res = await fetchPayslipAPI(
+        splitWeekStart + "T18:45:00.000Z",
+        splitWeekEnd + "T18:45:00.000Z",
+      );
+      console.log(res.data);
       setPayslipData(res.data.payslip);
     } catch (error: any) {
       console.log(error.message);
@@ -88,6 +118,9 @@ const Payslip = () => {
     try {
       await deletePayslipAPI();
       alert("Payslip deleted");
+
+      setWeekStart(new Date());
+      setWeekEnd(new Date());
     } catch (error: any) {
       console.log(error.message);
     } finally {
@@ -103,16 +136,16 @@ const Payslip = () => {
     }
     setLoading(true);
     try {
-      await generatePayslipsAPI(
+      const splitWeekStart = addOneDay(weekStart).toISOString().split("T")[0];
+      const splitWeekEnd = addOneDay(weekEnd).toISOString().split("T")[0];
+
+      const res = await generatePayslipsAPI(
         workers.map((w) => w.id),
-        weekStart,
-        weekEnd,
+        splitWeekStart + "T18:45:00.000Z",
+        splitWeekEnd + "T18:45:00.000Z",
       );
-      console.log(
-        payslipData.map((p) => p.workersId),
-        weekStart,
-        weekEnd,
-      );
+      console.log(res.data);
+      return res.data;
     } catch (error: any) {
       console.log(error.message);
     } finally {
@@ -134,7 +167,77 @@ const Payslip = () => {
         )}
         <div className="flex justify-end items-end w-full flex-row gap-x-2">
           {payslipData.length === 0 && (
-            <Button onClick={handleGeneratePayslip}>Generate Payslip</Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Generate Payslip</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>Generate Payslip</DialogTitle>
+                  <DialogDescription>
+                    Generate payslips of workers for the week here. Click
+                    generate when you&apos;re done.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      data-empty={!weekStart}
+                      className="w-53 justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                    >
+                      {weekStart ? (
+                        format(weekStart, "PPP")
+                      ) : (
+                        <span>Assign the start of the week</span>
+                      )}
+                      <ChevronDownIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={weekStart}
+                      onSelect={setWeekStart}
+                      defaultMonth={weekStart}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      data-empty={!weekEnd}
+                      className="w-53 justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                    >
+                      {weekEnd ? (
+                        format(weekEnd, "PPP")
+                      ) : (
+                        <span>Assign the start of the week</span>
+                      )}
+                      <ChevronDownIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={weekEnd}
+                      onSelect={setWeekEnd}
+                      defaultMonth={weekEnd}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button onClick={handleGeneratePayslip}>Generate</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           )}
           {payslipData.length > 0 && (
             <Button variant="destructive" onClick={handleDeletePayslips}>
@@ -178,6 +281,8 @@ const Payslip = () => {
                 className="text-center align-middle lg:py-6"
               >
                 Please generate payslip to view weekly data
+                {/* {addOneDay(weekStart).toISOString().split("T")[0]} -{" "}
+                {addOneDay(weekEnd).toISOString().split("T")[0]} */}
               </TableCell>
             </TableRow>
           ) : (

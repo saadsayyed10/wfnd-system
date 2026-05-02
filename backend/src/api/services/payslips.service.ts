@@ -8,9 +8,8 @@ export const generatePayslips = async (
   const start = weekStart.toString().split("T")[0];
   const end = weekEnd.toString().split("T")[0];
 
-  const timeZone = "T18:45:00.000Z";
-  const newStart = start + timeZone;
-  const newEnd = end + timeZone;
+  const newStart = start + "T18:45:00Z";
+  const newEnd = end + "T18:45:00Z";
 
   const workers = await prisma.workers.findMany({
     where: {
