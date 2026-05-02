@@ -54,12 +54,21 @@ export const generatePayslips = async (
   // Build payslip data for each worker
   const payslipData = workers.map((worker) => {
     const attendance = attendanceByWorker[worker.id] ?? [];
-    const totalDays = attendance.filter((a) => a.type === "PRESENT").length;
+
+    const presentDays = attendance.filter((a) => a.type === "PRESENT").length;
+
+    const halfDays = attendance.filter((a) => a.type === "HALFDAY").length;
+
+    const totalDays = presentDays + halfDays * 0.5;
+
     const overtimeTotal = attendance.reduce(
-      (sum, a) => sum + a.overtimeHours,
+      (sum, a) => sum + (a.overtimeHours || 0),
       0,
     );
-    const actualDays = totalDays + overtimeTotal;
+
+    // 11 hrs = 1 day
+    const actualDays = totalDays + overtimeTotal / 11;
+
     const weeklyWage = actualDays * worker.daily_payment;
 
     return {

@@ -42,7 +42,6 @@ model attendance {
   type          AttendanceType @default(ABSENT)
   totalHours    Float          @default(0)
   overtimeHours Float          @default(0)
-  halfdayHours  Float          @default(0)
 
   workerId String?
   workers  workers? @relation(fields: [workerId], references: [id], onDelete: Cascade)
@@ -58,7 +57,6 @@ model payslips {
   total_days     Int
   actual_days    Float
   overtime_total Float
-  halfday_total  Float
   weekly_wage    Int
   created_at     DateTime @default(now())
   workers        workers? @relation(fields: [workersId], references: [id])
