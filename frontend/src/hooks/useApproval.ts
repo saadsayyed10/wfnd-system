@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ApprovalState {
   approval: boolean | null;
@@ -10,19 +11,20 @@ interface ApprovalState {
   reset: () => void;
 }
 
-export const useApproval = create<ApprovalState>((set) => ({
-  approval: null,
-  userType: null,
+export const useApproval = create<ApprovalState>()(
+  persist(
+    (set) => ({
+      approval: null,
+      userType: null,
 
-  setApproval: (approval) => {
-    set({ approval });
-  },
+      setApproval: (approval) => set({ approval }),
 
-  setUserType: (userType) => {
-    set({ userType });
-  },
+      setUserType: (userType) => set({ userType }),
 
-  reset: () => {
-    set({ approval: null, userType: null });
-  },
-}));
+      reset: () => set({ approval: null, userType: null }),
+    }),
+    {
+      name: "approval-storage",
+    },
+  ),
+);

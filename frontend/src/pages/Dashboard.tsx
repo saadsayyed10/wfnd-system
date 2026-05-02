@@ -1,7 +1,6 @@
 import { fetchProfileAPI, syncUserToDBAPI } from "@/api/user.api";
-import { Button } from "@/components/ui/button";
 import { useApproval } from "@/hooks/useApproval";
-import { getToken, SignOutButton, useUser } from "@clerk/react";
+import { getToken, useUser } from "@clerk/react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Waiting from "./Waiting";

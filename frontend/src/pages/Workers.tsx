@@ -31,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useApproval } from "@/hooks/useApproval";
 import { getToken } from "@clerk/react";
 import { Loader2, MoreHorizontal, Search } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -52,6 +53,8 @@ const Workers = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [open, setOpen] = useState(false);
+
+  const { userType } = useApproval();
 
   const fetchAllWorkers = async () => {
     setLoading(true);
@@ -145,9 +148,11 @@ const Workers = () => {
           />
         </div>
         <Dialog>
-          <DialogTrigger asChild>
-            <Button size="lg">Add Worker</Button>
-          </DialogTrigger>
+          {userType === "ADMIN" && (
+            <DialogTrigger asChild>
+              <Button size="lg">Add Worker</Button>
+            </DialogTrigger>
+          )}
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
               <DialogTitle>Register Worker</DialogTitle>
@@ -191,7 +196,7 @@ const Workers = () => {
             <TableHead>Name</TableHead>
             <TableHead>Daily Payment</TableHead>
             <TableHead>Added On</TableHead>
-            <TableHead>Actions</TableHead>
+            {userType === "ADMIN" && <TableHead>Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody className="border">
@@ -208,68 +213,72 @@ const Workers = () => {
                 <TableCell>{worker.name}</TableCell>
                 <TableCell>{worker.daily_payment}</TableCell>
                 <TableCell>{worker.created_at.split("T")[0]}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => deleteWorker(worker.id)}>
-                        Delete
-                      </DropdownMenuItem>
-                      <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogTrigger asChild>
-                          <DropdownMenuItem
-                            onSelect={(e) => e.preventDefault()}
-                          >
-                            Update Payment
-                          </DropdownMenuItem>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm">
-                          <DialogHeader>
-                            <DialogTitle>Update Worker</DialogTitle>
-                            <DialogDescription>
-                              Update worker&apos;s name or payment to your
-                              system here. Click update when you&apos;re done.
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          <Input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Name of Worker"
-                          />
-                          <Input
-                            value={dailyPayment}
-                            onChange={(e) => setDailyPayment(e.target.value)}
-                            placeholder="Set Daily Payment"
-                          />
-
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button
-                              disabled={loading}
-                              onClick={async () => {
-                                await updateWorker(worker.id);
-                                setOpen(false);
-                              }}
+                {userType === "ADMIN" && (
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={() => deleteWorker(worker.id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                        <Dialog open={open} onOpenChange={setOpen}>
+                          <DialogTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
                             >
-                              {loading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                "Update changes"
-                              )}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+                              Update Payment
+                            </DropdownMenuItem>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-sm">
+                            <DialogHeader>
+                              <DialogTitle>Update Worker</DialogTitle>
+                              <DialogDescription>
+                                Update worker&apos;s name or payment to your
+                                system here. Click update when you&apos;re done.
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <Input
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              placeholder="Name of Worker"
+                            />
+                            <Input
+                              value={dailyPayment}
+                              onChange={(e) => setDailyPayment(e.target.value)}
+                              placeholder="Set Daily Payment"
+                            />
+
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                              </DialogClose>
+                              <Button
+                                disabled={loading}
+                                onClick={async () => {
+                                  await updateWorker(worker.id);
+                                  setOpen(false);
+                                }}
+                              >
+                                {loading ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  "Update changes"
+                                )}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           )}
