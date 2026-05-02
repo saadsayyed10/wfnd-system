@@ -7,6 +7,7 @@ import Workers from "./pages/Workers";
 import Attendance from "./pages/Attendance";
 import Payslips from "./pages/Payslips";
 import Layout from "./_components/Layout";
+import Waiting from "./pages/Waiting";
 
 const App = () => {
   const { isSignedIn, isLoaded } = useAuth();
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/payslips" element={<Payslips />} />
         </Route>
+        <Route path="/waiting" element={<Waiting />} />
       </Routes>
     </BrowserRouter>
   ) : (
