@@ -1,9 +1,12 @@
+import { useApproval } from "@/hooks/useApproval";
 import { UserButton } from "@clerk/react";
 import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  return (
+  const { approval } = useApproval();
+
+  return approval ? (
     <div className="flex justify-between items-center w-full lg:px-12 px-6 bg-black text-white absolute top-0 flex-row">
       {/* <h1 className="lg:text-4xl font-bold">WFND</h1> */}
       <img src="./logo.png" width={110} height={80} />
@@ -18,6 +21,8 @@ const Navbar = () => {
         <Menu className="w-4 h-4 block lg:hidden" color="white" />
       </div>
     </div>
+  ) : (
+    <div />
   );
 };
 

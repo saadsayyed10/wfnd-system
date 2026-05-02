@@ -10,7 +10,7 @@ export default function Waiting() {
   const { signOut } = useClerk();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 font-sans antialiased lg:my-6">
+    <div className="flex flex-col items-center justify-center px-4 font-sans antialiased lg:mb-10">
       {/* Subtle grid background */}
       <div
         className="fixed inset-0 pointer-events-none"
