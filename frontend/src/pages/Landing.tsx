@@ -1,3 +1,4 @@
+import InstallButton from "@/_components/InstallApp";
 import { Button } from "@/components/ui/button";
 import { useApproval } from "@/hooks/useApproval";
 import { SignInButton } from "@clerk/react";
@@ -44,6 +45,7 @@ const Landing = () => {
             Continue with Google
           </Button>
         </SignInButton>
+        <InstallButton />
       </div>
     </div>
   );
