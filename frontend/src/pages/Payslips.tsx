@@ -6,17 +6,17 @@ import {
 } from "@/api/payslip.api";
 import { fetchWorkersAPI } from "@/api/worker.api";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+// import {
+//   Dialog,
+//   DialogClose,
+//   DialogContent,
+//   DialogDescription,
+//   DialogFooter,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
+// import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -29,6 +29,8 @@ import {
 import { getToken } from "@clerk/react";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 interface PayslipData {
   id: string;
@@ -62,8 +64,8 @@ const Payslip = () => {
   const [payslipData, setPayslipData] = useState<PayslipData[]>([]);
   const [workers, setWorkers] = useState<{ id: string; name: string }[]>([]);
 
-  const [startOfWeek, setStartOfWeek] = useState("");
-  const [endOfWeek, setEndOfWeek] = useState("");
+  // const [startOfWeek, setStartOfWeek] = useState("");
+  // const [endOfWeek, setEndOfWeek] = useState("");
 
   const weekStart = "2026-04-28T10:39:40.359Z";
   const weekEnd = "2026-05-04T10:39:40.359Z";
@@ -142,6 +144,56 @@ const Payslip = () => {
     return `${hours}.${minutes.toString().padStart(2, "0")}`;
   };
 
+  const exportToExcel = () => {
+    if (payslipData.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    const formattedData = payslipData.map((payslip, index) => {
+      const days: Record<string, string> = {};
+
+      const weekDays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+
+      payslip.payslip_data.forEach((pD, i) => {
+        days[weekDays[i]] = typeMap[pD.type] ?? pD.type;
+      });
+
+      return {
+        "Sr No": index + 1,
+        Worker: payslip.workers.name,
+        ...days,
+        "O/T Hours": formatHours(payslip.overtime_total),
+        "Total Days": payslip.total_days,
+        "Actual Days": payslip.actual_days.toFixed(2),
+        "Daily Payment": payslip.workers.daily_payment,
+        "Total Wage": payslip.weekly_wage,
+      };
+    });
+
+    // Convert JSON → Sheet
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+    // Create Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Payslips");
+
+    // Generate file
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const fileData = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(
+      fileData,
+      `Payslips_${weekStart.split("T")[0]}_${weekEnd.split("T")[0]}.xlsx`,
+    );
+  };
+
   useEffect(() => {
     fetchPayslipData();
     fetchAllWorkers();
@@ -152,10 +204,19 @@ const Payslip = () => {
       <Navbar />
       <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
         <div className="flex justify-between items-center w-full">
-          <Button variant="secondary">Export to .xlsx</Button>
+          <Button variant="secondary" onClick={exportToExcel}>
+            Export to .xlsx
+          </Button>
           <div />
           <div className="flex justify-end items-end w-full flex-row gap-x-2">
-            <Dialog>
+            <Button disabled={payslipLoading} onClick={handleGeneratePayslip}>
+              {payslipLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Generate Payslip"
+              )}
+            </Button>
+            {/* <Dialog>
               <DialogTrigger asChild>
                 <Button>Generate Payslip</Button>
               </DialogTrigger>
@@ -197,7 +258,7 @@ const Payslip = () => {
                   </Button>
                 </DialogFooter>
               </DialogContent>
-            </Dialog>
+            </Dialog> */}
             <Button
               disabled={loading}
               variant="destructive"
