@@ -171,6 +171,7 @@ const Workers = () => {
               value={dailyPayment}
               onChange={(e) => setDailyPayment(e.target.value)}
               placeholder="Set Daily Payment"
+              type="number"
             />
 
             <DialogFooter>

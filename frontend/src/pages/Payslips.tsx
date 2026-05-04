@@ -1,6 +1,22 @@
 import Navbar from "@/_components/Navbar";
-import { fetchPayslipAPI } from "@/api/payslip.api";
+import {
+  deletePayslipAPI,
+  fetchPayslipAPI,
+  generatePayslipsAPI,
+} from "@/api/payslip.api";
+import { fetchWorkersAPI } from "@/api/worker.api";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -10,6 +26,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getToken } from "@clerk/react";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface PayslipData {
@@ -42,8 +60,16 @@ const typeMap: Record<string, string> = {
 
 const Payslip = () => {
   const [payslipData, setPayslipData] = useState<PayslipData[]>([]);
-  const weekStart = "2026-05-01T10:39:40.359Z";
+  const [workers, setWorkers] = useState<{ id: string; name: string }[]>([]);
+
+  const [startOfWeek, setStartOfWeek] = useState("");
+  const [endOfWeek, setEndOfWeek] = useState("");
+
+  const weekStart = "2026-04-28T10:39:40.359Z";
   const weekEnd = "2026-05-04T10:39:40.359Z";
+
+  const [loading, setLoading] = useState(false);
+  const [payslipLoading, setPayslipLoading] = useState(false);
 
   const fetchPayslipData = async () => {
     try {
@@ -55,8 +81,70 @@ const Payslip = () => {
     }
   };
 
+  const fetchAllWorkers = async () => {
+    setLoading(true);
+    try {
+      const token = await getToken();
+
+      if (!token) {
+        throw new Error("Unauthorized: No token found");
+      }
+
+      const res = await fetchWorkersAPI(token);
+      setWorkers(res.data.worker);
+    } catch (error: any) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeletePayslips = async () => {
+    setLoading(true);
+    try {
+      await deletePayslipAPI();
+      alert("Payslip deleted");
+    } catch (error: any) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+      fetchPayslipData();
+    }
+  };
+
+  const handleGeneratePayslip = async () => {
+    if (!weekStart || !weekEnd) {
+      alert("Please enter week start and week end");
+      return;
+    }
+    setPayslipLoading(true);
+    try {
+      const res = await generatePayslipsAPI(
+        workers.map((w) => w.id),
+        weekStart,
+        weekEnd,
+      );
+      console.log(res.data);
+      return res.data;
+    } catch (error: any) {
+      console.log(error.message);
+    } finally {
+      setPayslipLoading(false);
+      fetchPayslipData();
+      fetchAllWorkers();
+    }
+  };
+
+  const formatHours = (decimalHours: number) => {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+
+    return `${hours}.${minutes.toString().padStart(2, "0")}`;
+  };
+
   useEffect(() => {
     fetchPayslipData();
+    fetchAllWorkers();
   }, []);
 
   return (
@@ -67,23 +155,79 @@ const Payslip = () => {
           <Button variant="secondary">Export to .xlsx</Button>
           <div />
           <div className="flex justify-end items-end w-full flex-row gap-x-2">
-            <Button>Generate Payslip</Button>
-            <Button variant="destructive">Delete</Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Generate Payslip</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>Generate Payslip</DialogTitle>
+                  <DialogDescription>
+                    Generate payslips of workers for the week here. Click
+                    generate when you&apos;re done.
+                  </DialogDescription>
+                </DialogHeader>
+                <Input
+                  className="w-full"
+                  placeholder="Week start date of this month"
+                  type="number"
+                  value={startOfWeek}
+                  onChange={(e) => setStartOfWeek(e.target.value)}
+                />
+                <Input
+                  className="w-full"
+                  placeholder="Week end date of this month"
+                  type="number"
+                  value={endOfWeek}
+                  onChange={(e) => setEndOfWeek(e.target.value)}
+                />
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button
+                    disabled={payslipLoading}
+                    onClick={handleGeneratePayslip}
+                  >
+                    {payslipLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Generate"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button
+              disabled={loading}
+              variant="destructive"
+              onClick={handleDeletePayslips}
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Delete"
+              )}
+            </Button>
           </div>
         </div>
         <Table>
           <TableCaption>
-            Wage statement for period: 01-05-2026 to 04-05-2026
+            {payslipData.length > 0 &&
+              `Wage statement for period: ${weekStart.split("T")[0]} to ${weekEnd.split("T")[0]}`}
           </TableCaption>
           <TableHeader className="border">
             <TableRow>
               <TableHead>Sr No.</TableHead>
               <TableHead>Worker</TableHead>
+              <TableHead>MON</TableHead>
+              <TableHead>TUE</TableHead>
+              <TableHead>WED</TableHead>
+              <TableHead>THU</TableHead>
               <TableHead>FRI</TableHead>
               <TableHead>SAT</TableHead>
               <TableHead>SUN</TableHead>
-              <TableHead>MON</TableHead>
-              <TableHead>O/T</TableHead>
+              <TableHead>O/T Hours</TableHead>
               <TableHead>Total Days</TableHead>
               <TableHead>Actual Day</TableHead>
               <TableHead>Daily Payment</TableHead>
@@ -91,20 +235,30 @@ const Payslip = () => {
             </TableRow>
           </TableHeader>
           <TableBody className="border">
-            {payslipData.map((payslip, idx) => (
-              <TableRow key={payslip.id}>
-                <TableCell>{idx + 1}</TableCell>
-                <TableCell>{payslip.workers.name}</TableCell>
-                {payslip.payslip_data.map((pD, idx) => (
-                  <TableCell key={idx}>{typeMap[pD.type] ?? pD.type}</TableCell>
-                ))}
-                <TableCell>{payslip.overtime_total.toFixed(2)}</TableCell>
-                <TableCell>{payslip.total_days}</TableCell>
-                <TableCell>{payslip.actual_days.toFixed(2)}</TableCell>
-                <TableCell>{payslip.workers.daily_payment}</TableCell>
-                <TableCell>{payslip.weekly_wage}</TableCell>
+            {payslipData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={14} align="center" className="lg:p-6">
+                  Please generate payslip to view this week&apos;s data
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              payslipData.map((payslip, idx) => (
+                <TableRow key={payslip.id}>
+                  <TableCell>{idx + 1}</TableCell>
+                  <TableCell>{payslip.workers.name}</TableCell>
+                  {payslip.payslip_data.map((pD, idx) => (
+                    <TableCell key={idx}>
+                      {typeMap[pD.type] ?? pD.type}
+                    </TableCell>
+                  ))}
+                  <TableCell>{formatHours(payslip.overtime_total)}</TableCell>
+                  <TableCell>{payslip.total_days}</TableCell>
+                  <TableCell>{payslip.actual_days.toFixed(2)}</TableCell>
+                  <TableCell>{payslip.workers.daily_payment}</TableCell>
+                  <TableCell>{payslip.weekly_wage}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

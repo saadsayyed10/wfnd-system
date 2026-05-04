@@ -287,12 +287,14 @@ const Attendance = () => {
                               value={hour}
                               onChange={(e) => setHour(e.target.value)}
                               placeholder="Hour"
+                              type="number"
                             />
                             <span>:</span>
                             <Input
                               value={minute}
                               onChange={(e) => setMinute(e.target.value)}
                               placeholder="Minute"
+                              type="number"
                             />
 
                             <Select
@@ -352,12 +354,14 @@ const Attendance = () => {
                               value={hour}
                               onChange={(e) => setHour(e.target.value)}
                               placeholder="Hour"
+                              type="number"
                             />
                             <span>:</span>
                             <Input
                               value={minute}
                               onChange={(e) => setMinute(e.target.value)}
                               placeholder="Minute"
+                              type="number"
                             />
 
                             <Select
