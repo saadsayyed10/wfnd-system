@@ -299,7 +299,8 @@ const Payslip = () => {
             {payslipData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={14} align="center" className="lg:p-6">
-                  Please generate payslip to view this week&apos;s data
+                  Please generate payslip on coming Monday to view last
+                  week&apos;s data
                 </TableCell>
               </TableRow>
             ) : (
