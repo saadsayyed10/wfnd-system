@@ -10,7 +10,8 @@ import {
 const workerRoutes = Router();
 
 workerRoutes.post("/add", requireAuth(), addWorkerController);
-workerRoutes.get("/all", requireAuth(), fetchAllWorkersController);
+// workerRoutes.get("/all", requireAuth(), fetchAllWorkersController);
+workerRoutes.get("/all", fetchAllWorkersController);
 workerRoutes.put("/update/:id", requireAuth(), updateWorkerController);
 workerRoutes.delete("/delete/:id", requireAuth(), deleteWorkerController);
 
