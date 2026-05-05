@@ -41,13 +41,13 @@ export const fetchAllWorkersController = async (
   res: Response,
 ) => {
   try {
-    // const { userId } = getAuth(req);
-    // if (!userId) {
-    //   console.log("Unauthorized: No logged in user found");
-    //   return res
-    //     .status(401)
-    //     .json({ error: "Unauthorized: No logged in user found" });
-    // }
+    const { userId } = getAuth(req);
+    if (!userId) {
+      console.log("Unauthorized: No logged in user found");
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: No logged in user found" });
+    }
     const worker = await fetchAllWorkers();
     res.status(200).json({ worker });
   } catch (error: any) {
