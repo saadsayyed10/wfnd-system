@@ -31,6 +31,17 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface PayslipData {
   id: string;
@@ -64,11 +75,11 @@ const Payslip = () => {
   const [payslipData, setPayslipData] = useState<PayslipData[]>([]);
   const [workers, setWorkers] = useState<{ id: string; name: string }[]>([]);
 
-  // const [startOfWeek, setStartOfWeek] = useState("");
-  // const [endOfWeek, setEndOfWeek] = useState("");
+  const [startOfWeek, setStartOfWeek] = useState("");
+  const [endOfWeek, setEndOfWeek] = useState("");
 
-  const weekStart = "2026-04-28T10:39:40.359Z";
-  const weekEnd = "2026-05-04T10:39:40.359Z";
+  const weekStart = `2026-05-${startOfWeek}T10:39:40.359Z`;
+  const weekEnd = `2026-05-${endOfWeek}T10:39:40.359Z`;
 
   const [loading, setLoading] = useState(false);
   const [payslipLoading, setPayslipLoading] = useState(false);
@@ -209,14 +220,14 @@ const Payslip = () => {
           </Button>
           <div />
           <div className="flex justify-end items-end w-full flex-row gap-x-2">
-            <Button disabled={payslipLoading} onClick={handleGeneratePayslip}>
+            {/* <Button disabled={payslipLoading} onClick={handleGeneratePayslip}>
               {payslipLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 "Generate Payslip"
               )}
-            </Button>
-            {/* <Dialog>
+            </Button> */}
+            <Dialog>
               <DialogTrigger asChild>
                 <Button>Generate Payslip</Button>
               </DialogTrigger>
@@ -258,7 +269,7 @@ const Payslip = () => {
                   </Button>
                 </DialogFooter>
               </DialogContent>
-            </Dialog> */}
+            </Dialog>
             <Button
               disabled={loading}
               variant="destructive"
@@ -281,13 +292,13 @@ const Payslip = () => {
             <TableRow>
               <TableHead>Sr No.</TableHead>
               <TableHead>Worker</TableHead>
+              <TableHead>SUN</TableHead>
               <TableHead>MON</TableHead>
               <TableHead>TUE</TableHead>
               <TableHead>WED</TableHead>
               <TableHead>THU</TableHead>
               <TableHead>FRI</TableHead>
               <TableHead>SAT</TableHead>
-              <TableHead>SUN</TableHead>
               <TableHead>O/T Hours</TableHead>
               <TableHead>Total Days</TableHead>
               <TableHead>Actual Day</TableHead>
@@ -299,7 +310,7 @@ const Payslip = () => {
             {payslipData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={14} align="center" className="lg:p-6">
-                  Please generate payslip on coming Monday to view last
+                  Please generate payslip on Saturday to view current
                   week&apos;s data
                 </TableCell>
               </TableRow>
