@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -7,7 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { useApproval } from "@/hooks/useApproval";
 import { UserButton } from "@clerk/react";
-import { Menu } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -24,6 +26,38 @@ const Navbar = () => {
         <Link to={"/payslips"}>Pay slips</Link>
       </div>
       <div className="flex justify-end items-center w-full flex-row gap-x-4">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Bell className="w-4 h-4 cursor-pointer" color="white" />
+          </DialogTrigger>
+          <DialogContent className="flex justify-start items-start flex-col gap-y-4 w-full h-75 overflow-y-auto px-4 lg:py-10 py-10">
+            <div className="flex justify-start items-start flex-col gap-y-1 p-2 shadow rounded-xl border w-full">
+              <h4 className="font-medium text-lg">Worker notification:</h4>
+              <h6 className="text-xs text-neutral-500">
+                Anasaya has been added to the system.
+              </h6>
+              <div className="flex justify-between items-center w-full mt-4">
+                <p className="text-xs text-neutral-500">1:04 PM</p>
+                <p className="text-xs text-neutral-500">2026-05-09</p>
+              </div>
+            </div>
+            <div className="flex justify-start items-start flex-col gap-y-1 p-2 shadow rounded-xl border w-full">
+              <h4 className="font-medium text-lg">Attendance notification:</h4>
+              <h6 className="text-xs text-neutral-500">
+                Asif Mistri logged-in at 9:17 AM
+              </h6>
+              <div className="flex justify-between items-center w-full mt-4">
+                <p className="text-xs text-neutral-500">1:04 PM</p>
+                <p className="text-xs text-neutral-500">2026-05-09</p>
+              </div>
+            </div>
+            <div className="w-full">
+              <Button className="w-full" variant="destructive">
+                Delete All
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
         <UserButton />
         <Sheet>
           <SheetTrigger asChild>
