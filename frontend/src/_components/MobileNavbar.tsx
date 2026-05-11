@@ -13,25 +13,25 @@ const MobileNavbar = () => {
 
   return (
     <div className="flex justify-start items-start fixed z-50 bottom-0 lg:hidden bg-transparent w-full h-20 p-2 gap-x-2">
-      <div className="flex justify-start items-start gap-x-6 w-[75%] bg-white border shadow-lg px-2 py-1.5 rounded-full">
+      <div className="flex justify-start items-start gap-x-4 w-[75%] bg-white border shadow-lg px-2 py-1.5 rounded-full">
         <Button size="lg" variant="ghost">
           <Link to={"/"}>
-            <LayoutDashboard size={10} />
+            <LayoutDashboard width={4} height={4} />
           </Link>
         </Button>
         <Button size="lg" variant="ghost">
           <Link to={"/workers"}>
-            <Users2 size={10} />
+            <Users2 width={4} height={4} />
           </Link>
         </Button>
         <Button size="lg" variant="ghost">
           <Link to={"/attendance"}>
-            <CalendarDays size={10} />
+            <CalendarDays width={4} height={4} />
           </Link>
         </Button>
         <Button size="lg" variant="ghost">
           <Link to={"/payslips"}>
-            <ReceiptIndianRupee size={10} />
+            <ReceiptIndianRupee width={4} height={4} />
           </Link>
         </Button>
       </div>
