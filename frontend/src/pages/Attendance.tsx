@@ -32,7 +32,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -189,9 +188,9 @@ const Attendance = () => {
   );
 
   return (
-    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-8 lg:p-10 p-4 bg-neutral-100">
       <div className="flex justify-between items-center w-full">
-        <div className="flex justify-start items-center lg:gap-x-2 gap-x-1">
+        <div className="lg:flex hidden justify-start items-center lg:gap-x-2 gap-x-1">
           <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
           <Input
             className="lg:w-62 w-44"
@@ -201,7 +200,7 @@ const Attendance = () => {
           />
         </div>
 
-        <div className="flex items-center lg:gap-x-2 gap-x-0 ml-auto">
+        <div className="lg:flex hidden items-center lg:gap-x-2 gap-x-0 ml-auto">
           <Button variant="ghost" onClick={goToPreviousDay}>
             <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
           </Button>
@@ -225,21 +224,47 @@ const Attendance = () => {
           </Button>
         </div>
       </div>
+      <div className="flex justify-start items-start w-full gap-x-3">
+        <div className="flex justify-center items-center flex-col px-2 py-1">
+          <span className="text-[10px]">S</span>
+          <h4 className="text-lg">10</h4>
+        </div>
+        <div className="flex justify-center items-center flex-col px-4 py-1 bg-white shadow-lg border rounded-lg">
+          <span className="text-[10px]">M</span>
+          <h4 className="text-lg">11</h4>
+        </div>
+        <div className="flex justify-center items-center flex-col px-2 py-1">
+          <span className="text-[10px]">T</span>
+          <h4 className="text-lg">12</h4>
+        </div>
+        <div className="flex justify-center items-center flex-col px-2 py-1">
+          <span className="text-[10px]">W</span>
+          <h4 className="text-lg">13</h4>
+        </div>
+        <div className="flex justify-center items-center flex-col px-2 py-1">
+          <span className="text-[10px]">T</span>
+          <h4 className="text-lg">14</h4>
+        </div>
+        <div className="flex justify-center items-center flex-col px-2 py-1">
+          <span className="text-[10px]">F</span>
+          <h4 className="text-lg">15</h4>
+        </div>
+        <div className="flex justify-center items-center flex-col px-2 py-1">
+          <span className="text-[10px]">S</span>
+          <h4 className="text-lg">16</h4>
+        </div>
+      </div>
       <Table>
-        <TableCaption>A list of attendance of all WFND Employees</TableCaption>
-        <TableHeader className="border">
+        <TableHeader>
           <TableRow>
-            <TableHead>Sr No.</TableHead>
             <TableHead>Worker</TableHead>
             <TableHead>Login Time</TableHead>
             <TableHead>Logout Time</TableHead>
-            <TableHead>Worked Hours</TableHead>
-            <TableHead>Overtime Hours</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="text-end">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="border">
+        <TableBody>
           {!attendances || attendances.length === 0 ? (
             <TableRow>
               <TableCell colSpan={8} className="text-center">
@@ -247,16 +272,38 @@ const Attendance = () => {
               </TableCell>
             </TableRow>
           ) : (
-            filteredAttendance.map((attendance, idx) => (
+            filteredAttendance.map((attendance) => (
               <TableRow key={attendance.workerId}>
-                <TableCell>{idx + 1}</TableCell>
                 <TableCell>{attendance.workers.name}</TableCell>
-                <TableCell>{attendance.login}</TableCell>
-                <TableCell>{attendance.logout}</TableCell>
-                <TableCell>{attendance.totalHours.toFixed(2)}</TableCell>
-                <TableCell>{attendance.overtimeHours.toFixed(2)}</TableCell>
-                <TableCell>{attendance.type}</TableCell>
-                <TableCell>
+                <TableCell className="text-center">
+                  {attendance.login}
+                </TableCell>
+                <TableCell className="text-center">
+                  {attendance.logout}
+                </TableCell>
+                <TableCell className="text-xs">
+                  {attendance.type === "ABSENT" && (
+                    <span className="px-4 py-1 bg-red-500 text-white shadow-lg rounded-full">
+                      A
+                    </span>
+                  )}
+                  {attendance.type === "PRESENT" && (
+                    <span className="px-4 py-1 bg-green-500 text-black shadow-lg rounded-full">
+                      P
+                    </span>
+                  )}
+                  {attendance.type === "HALFDAY" && (
+                    <span className="px-4 py-1 bg-yellow-500 text-black shadow-lg rounded-full">
+                      HD
+                    </span>
+                  )}
+                  {attendance.type === "OVERTIME" && (
+                    <span className="px-4 py-1 bg-blue-500 text-black shadow-lg rounded-full">
+                      OT
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="text-end">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
