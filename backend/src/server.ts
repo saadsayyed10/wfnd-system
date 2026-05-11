@@ -7,6 +7,7 @@ import { clerkMiddleware } from "@clerk/express";
 import workerRoutes from "./api/routes/worker.route";
 import attendanceRoutes from "./api/routes/attendance.route";
 import payslipRoutes from "./api/routes/payslip.route";
+import notificationRoutes from "./api/routes/notification.route";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/workers", workerRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/payslips", payslipRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 const startServer = async () => {
   await connectToDB();

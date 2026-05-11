@@ -5,9 +5,9 @@ import {
   fetchAllNotificatonController,
 } from "../controllers/notification.controller";
 
-const notificationRouter = Router();
+const notificationRoutes = Router();
 
-notificationRouter.get("/", requireAuth(), fetchAllNotificatonController);
-notificationRouter.delete("/", requireAuth(), deleteAllNotificatonController);
+notificationRoutes.get("/", requireAuth(), fetchAllNotificatonController);
+notificationRoutes.delete("/", requireAuth(), deleteAllNotificatonController);
 
-export default notificationRouter;
+export default notificationRoutes;
