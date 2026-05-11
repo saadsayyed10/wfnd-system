@@ -1,3 +1,4 @@
+import Notification from "@/_components/Notification";
 import {
   changeAttendanceStatusAPI,
   fetchCurrentDayAPI,
@@ -44,6 +45,7 @@ import {
   Loader2,
   MoreHorizontal,
   Search,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -71,13 +73,15 @@ const Attendance = () => {
   const [logoutopen, setLogoutOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
 
+  const [hideSearch, setHideSearch] = useState<boolean>(false);
+
   const [hour, setHour] = useState("");
   const [minute, setMinute] = useState("");
   const [meridiem, setMeridiem] = useState("");
 
   const [type, setType] = useState("");
 
-  const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchAttendences = async () => {
     setAttendances([]);
@@ -179,28 +183,63 @@ const Attendance = () => {
     }
   };
 
+  // Replace the hardcoded days strip with this
+  const getWeekDays = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sun
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek);
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+      return day;
+    });
+  };
+
+  const weekDays = getWeekDays();
+  const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+
   useEffect(() => {
     fetchAttendences();
   }, [currentDay]);
 
   const filteredAttendance = attendances.filter((attendance) =>
-    attendance.workers.name.toLocaleLowerCase().includes(search.toLowerCase()),
+    attendance.workers.name
+      .toLocaleLowerCase()
+      .includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-8 lg:p-10 p-4 bg-neutral-100">
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-12 gap-y-8 lg:p-10 p-4 bg-neutral-100">
       <div className="flex justify-between items-center w-full">
-        <div className="lg:flex hidden justify-start items-center lg:gap-x-2 gap-x-1">
-          <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-          <Input
-            className="lg:w-62 w-44"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search worker..."
-          />
+        <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            className="rounded-full border shadow-lg bg-white"
+            onClick={() => {
+              !hideSearch ? setHideSearch(true) : setHideSearch(false);
+            }}
+          >
+            {!hideSearch ? (
+              <Search width={4} height={4} />
+            ) : (
+              <X width={4} height={4} />
+            )}
+          </Button>
+          {hideSearch && (
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="lg:w-62 w-40 bg-white rounded-full border shadow-lg"
+            />
+          )}
         </div>
 
-        <div className="lg:flex hidden items-center lg:gap-x-2 gap-x-0 ml-auto">
+        <Notification />
+
+        <div className="hidden items-center lg:gap-x-2 gap-x-0 ml-auto">
           <Button variant="ghost" onClick={goToPreviousDay}>
             <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
           </Button>
@@ -224,35 +263,30 @@ const Attendance = () => {
           </Button>
         </div>
       </div>
-      <div className="flex justify-start items-start w-full gap-x-3">
-        <div className="flex justify-center items-center flex-col px-2 py-1">
-          <span className="text-[10px]">S</span>
-          <h4 className="text-lg">10</h4>
-        </div>
-        <div className="flex justify-center items-center flex-col px-4 py-1 bg-white shadow-lg border rounded-lg">
-          <span className="text-[10px]">M</span>
-          <h4 className="text-lg">11</h4>
-        </div>
-        <div className="flex justify-center items-center flex-col px-2 py-1">
-          <span className="text-[10px]">T</span>
-          <h4 className="text-lg">12</h4>
-        </div>
-        <div className="flex justify-center items-center flex-col px-2 py-1">
-          <span className="text-[10px]">W</span>
-          <h4 className="text-lg">13</h4>
-        </div>
-        <div className="flex justify-center items-center flex-col px-2 py-1">
-          <span className="text-[10px]">T</span>
-          <h4 className="text-lg">14</h4>
-        </div>
-        <div className="flex justify-center items-center flex-col px-2 py-1">
-          <span className="text-[10px]">F</span>
-          <h4 className="text-lg">15</h4>
-        </div>
-        <div className="flex justify-center items-center flex-col px-2 py-1">
-          <span className="text-[10px]">S</span>
-          <h4 className="text-lg">16</h4>
-        </div>
+
+      <div className="flex lg:justify-center lg:items-center justify-start items-start w-full lg:gap-x-10 gap-x-1.5">
+        {weekDays.map((day, i) => {
+          const today = new Date();
+          const isFuture =
+            day > today && day.toDateString() !== today.toDateString();
+          const isSelected =
+            new Date(currentDay).toDateString() === day.toDateString();
+
+          return (
+            <button
+              key={i}
+              disabled={isFuture}
+              onClick={() => !isFuture && setCurrentDay(day.toISOString())}
+              className={`flex justify-center items-center flex-col lg:px-6 px-3 py-1 rounded-lg transition-all
+          ${isSelected ? "bg-white shadow-lg border" : ""}
+          ${isFuture ? "opacity-30 cursor-not-allowed" : "cursor-pointer hover:bg-white/60"}
+        `}
+            >
+              <span className="text-[10px]">{DAY_LABELS[i]}</span>
+              <h4 className="text-lg">{day.getDate()}</h4>
+            </button>
+          );
+        })}
       </div>
       <Table>
         <TableHeader>
