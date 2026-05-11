@@ -38,6 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useApproval } from "@/hooks/useApproval";
 import { getToken } from "@clerk/react";
 import {
   ChevronLeft,
@@ -82,6 +83,8 @@ const Attendance = () => {
   const [type, setType] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { userType } = useApproval();
 
   const fetchAttendences = async () => {
     setAttendances([]);
@@ -238,30 +241,6 @@ const Attendance = () => {
         </div>
 
         <Notification />
-
-        <div className="hidden items-center lg:gap-x-2 gap-x-0 ml-auto">
-          <Button variant="ghost" onClick={goToPreviousDay}>
-            <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
-          </Button>
-
-          <h4 className="lg:text-lg text-sm font-semibold">
-            {new Date(currentDay).toLocaleDateString("en-GB", {
-              weekday: "short",
-              day: "2-digit",
-              month: "short",
-            })}
-          </h4>
-
-          <Button
-            variant="ghost"
-            onClick={goToNextDay}
-            disabled={
-              new Date(currentDay).toDateString() === new Date().toDateString()
-            }
-          >
-            <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4" />
-          </Button>
-        </div>
       </div>
 
       <div className="flex lg:justify-center lg:items-center justify-start items-start w-full lg:gap-x-10 gap-x-1.5">
@@ -537,6 +516,31 @@ const Attendance = () => {
           )}
         </TableBody>
       </Table>
+      {userType === "ADMIN" && (
+        <div className="flex justify-center items-center lg:gap-x-6 gap-x-0 w-full lg:pb-20 pb-52">
+          <Button variant="ghost" onClick={goToPreviousDay}>
+            <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
+          </Button>
+
+          <h4 className="lg:text-lg text-sm font-semibold">
+            {new Date(currentDay).toLocaleDateString("en-GB", {
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+            })}
+          </h4>
+
+          <Button
+            variant="ghost"
+            onClick={goToNextDay}
+            disabled={
+              new Date(currentDay).toDateString() === new Date().toDateString()
+            }
+          >
+            <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
