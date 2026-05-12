@@ -37,7 +37,7 @@ const MobileNavbar = () => {
       </div>
       <div className="flex justify-center items-center w-[25%]">
         <img
-          src={user.imageUrl!}
+          src={user?.imageUrl!}
           className="w-12 h-12 bg-white shadow-lg rounded-full border"
         />
       </div>
