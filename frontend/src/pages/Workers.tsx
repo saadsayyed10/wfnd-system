@@ -1,3 +1,4 @@
+import Notification from "@/_components/Notification";
 import {
   addWorkerAPI,
   deleteWorkerAPI,
@@ -25,7 +26,6 @@ import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/table";
 import { useApproval } from "@/hooks/useApproval";
 import { getToken } from "@clerk/react";
-import { Loader2, MoreHorizontal, Search } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Workers {
@@ -55,6 +55,8 @@ const Workers = () => {
   const [open, setOpen] = useState(false);
 
   const { userType } = useApproval();
+
+  const [hideSearch, setHideSearch] = useState<boolean>(false);
 
   const fetchAllWorkers = async () => {
     setLoading(true);
@@ -136,71 +138,97 @@ const Workers = () => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-14 lg:p-10 p-6 bg-neutral-50">
       <div className="flex justify-between items-center w-full">
         <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
-          <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="lg:w-62 w-44"
-            placeholder="Search worker..."
-          />
-        </div>
-        <Dialog>
-          {userType === "ADMIN" && (
-            <DialogTrigger asChild>
-              <Button size="lg">Add Worker</Button>
-            </DialogTrigger>
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            className="rounded-full border shadow-lg bg-white"
+            onClick={() => {
+              !hideSearch ? setHideSearch(true) : setHideSearch(false);
+            }}
+          >
+            {!hideSearch ? (
+              <Search width={4} height={4} />
+            ) : (
+              <X width={4} height={4} />
+            )}
+          </Button>
+          {hideSearch && (
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="lg:w-62 w-40 bg-white rounded-full border shadow-lg"
+            />
           )}
-          <DialogContent className="sm:max-w-sm">
-            <DialogHeader>
-              <DialogTitle>Register Worker</DialogTitle>
-              <DialogDescription>
-                Add worker to your system here. Click save when you&apos;re
-                done.
-              </DialogDescription>
-            </DialogHeader>
+        </div>
+        <div className="flex justify-end items-end w-full gap-x-3">
+          <Notification />
+          <Dialog>
+            {userType === "ADMIN" && (
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-lg"
+                  className="rounded-full border shadow-lg bg-white"
+                >
+                  <Plus width={4} height={4} />
+                </Button>
+              </DialogTrigger>
+            )}
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Register Worker</DialogTitle>
+                <DialogDescription>
+                  Add worker to your system here. Click save when you&apos;re
+                  done.
+                </DialogDescription>
+              </DialogHeader>
 
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name of Worker"
-            />
-            <Input
-              value={dailyPayment}
-              onChange={(e) => setDailyPayment(e.target.value)}
-              placeholder="Set Daily Payment"
-              type="number"
-            />
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name of Worker"
+              />
+              <Input
+                value={dailyPayment}
+                onChange={(e) => setDailyPayment(e.target.value)}
+                placeholder="Set Daily Payment"
+                type="number"
+              />
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button disabled={loading} onClick={addWorker}>
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  "Save changes"
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button disabled={loading} onClick={addWorker}>
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Save changes"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <Table>
-        <TableCaption>A list of all WFND Workers</TableCaption>
-        <TableHeader className="border">
+        <TableHeader>
           <TableRow>
-            <TableHead>Sr No.</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Daily Payment</TableHead>
-            <TableHead>Added On</TableHead>
-            {userType === "ADMIN" && <TableHead>Actions</TableHead>}
+            <TableHead className="text-start">Name</TableHead>
+            <TableHead
+              className={`${userType === "MODERATOR" ? `text-end` : `text-center`}`}
+            >
+              Daily Payment
+            </TableHead>
+            {userType === "ADMIN" && (
+              <TableHead className="text-end">Actions</TableHead>
+            )}
           </TableRow>
         </TableHeader>
-        <TableBody className="border">
+        <TableBody>
           {filteredWorkers.length === 0 ? (
             <TableRow>
               <TableCell colSpan={6} className="text-center lg:py-6">
@@ -208,14 +236,16 @@ const Workers = () => {
               </TableCell>
             </TableRow>
           ) : (
-            filteredWorkers.map((worker, idx) => (
-              <TableRow>
-                <TableCell>{idx + 1}</TableCell>
-                <TableCell>{worker.name}</TableCell>
-                <TableCell>{worker.daily_payment}</TableCell>
-                <TableCell>{worker.created_at.split("T")[0]}</TableCell>
+            filteredWorkers.map((worker) => (
+              <TableRow key={worker.id}>
+                <TableCell className="text-start">{worker.name}</TableCell>
+                <TableCell
+                  className={`${userType === "MODERATOR" ? `text-end` : `text-center`}`}
+                >
+                  ₹ {worker.daily_payment}
+                </TableCell>
                 {userType === "ADMIN" && (
-                  <TableCell>
+                  <TableCell className="text-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger>
                         <Button variant="ghost" size="icon">

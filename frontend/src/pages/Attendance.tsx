@@ -1,3 +1,4 @@
+import Notification from "@/_components/Notification";
 import {
   changeAttendanceStatusAPI,
   fetchCurrentDayAPI,
@@ -32,12 +33,12 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useApproval } from "@/hooks/useApproval";
 import { getToken } from "@clerk/react";
 import {
   ChevronLeft,
@@ -45,6 +46,7 @@ import {
   Loader2,
   MoreHorizontal,
   Search,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -72,13 +74,17 @@ const Attendance = () => {
   const [logoutopen, setLogoutOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
 
+  const [hideSearch, setHideSearch] = useState<boolean>(false);
+
   const [hour, setHour] = useState("");
   const [minute, setMinute] = useState("");
   const [meridiem, setMeridiem] = useState("");
 
   const [type, setType] = useState("");
 
-  const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { userType } = useApproval();
 
   const fetchAttendences = async () => {
     setAttendances([]);
@@ -180,66 +186,98 @@ const Attendance = () => {
     }
   };
 
+  // Replace the hardcoded days strip with this
+  const getWeekDays = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sun
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek);
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+      return day;
+    });
+  };
+
+  const weekDays = getWeekDays();
+  const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+
   useEffect(() => {
     fetchAttendences();
   }, [currentDay]);
 
   const filteredAttendance = attendances.filter((attendance) =>
-    attendance.workers.name.toLocaleLowerCase().includes(search.toLowerCase()),
+    attendance.workers.name
+      .toLocaleLowerCase()
+      .includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-12 gap-y-8 lg:p-10 p-4 bg-neutral-50">
       <div className="flex justify-between items-center w-full">
-        <div className="flex justify-start items-center lg:gap-x-2 gap-x-1">
-          <Search className="lg:w-6 lg:h-6 w-4 h-4 opacity-25" />
-          <Input
-            className="lg:w-62 w-44"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search worker..."
-          />
-        </div>
-
-        <div className="flex items-center lg:gap-x-2 gap-x-0 ml-auto">
-          <Button variant="ghost" onClick={goToPreviousDay}>
-            <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
-          </Button>
-
-          <h4 className="lg:text-lg text-sm font-semibold">
-            {new Date(currentDay).toLocaleDateString("en-GB", {
-              weekday: "short",
-              day: "2-digit",
-              month: "short",
-            })}
-          </h4>
-
+        <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
           <Button
             variant="ghost"
-            onClick={goToNextDay}
-            disabled={
-              new Date(currentDay).toDateString() === new Date().toDateString()
-            }
+            size="icon-lg"
+            className="rounded-full border shadow-lg bg-white"
+            onClick={() => {
+              !hideSearch ? setHideSearch(true) : setHideSearch(false);
+            }}
           >
-            <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4" />
+            {!hideSearch ? (
+              <Search width={4} height={4} />
+            ) : (
+              <X width={4} height={4} />
+            )}
           </Button>
+          {hideSearch && (
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="lg:w-62 w-40 bg-white rounded-full border shadow-lg"
+            />
+          )}
         </div>
+
+        <Notification />
+      </div>
+
+      <div className="flex lg:justify-center lg:items-center justify-start items-start w-full lg:gap-x-10 gap-x-1.5">
+        {weekDays.map((day, i) => {
+          const today = new Date();
+          const isFuture =
+            day > today && day.toDateString() !== today.toDateString();
+          const isSelected =
+            new Date(currentDay).toDateString() === day.toDateString();
+
+          return (
+            <button
+              key={i}
+              disabled={isFuture}
+              onClick={() => !isFuture && setCurrentDay(day.toISOString())}
+              className={`flex justify-center items-center flex-col lg:px-6 px-3 py-1 rounded-lg transition-all
+          ${isSelected ? "bg-white shadow-lg border" : ""}
+          ${isFuture ? "opacity-30 cursor-not-allowed" : "cursor-pointer hover:bg-white/60"}
+        `}
+            >
+              <span className="text-[10px]">{DAY_LABELS[i]}</span>
+              <h4 className="text-lg">{day.getDate()}</h4>
+            </button>
+          );
+        })}
       </div>
       <Table>
-        <TableCaption>A list of attendance of all WFND Employees</TableCaption>
-        <TableHeader className="border">
+        <TableHeader>
           <TableRow>
-            <TableHead>Sr No.</TableHead>
             <TableHead>Worker</TableHead>
             <TableHead>Login Time</TableHead>
             <TableHead>Logout Time</TableHead>
-            <TableHead>Worked Hours</TableHead>
-            <TableHead>Overtime Hours</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="text-end">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="border">
+        <TableBody>
           {!attendances || attendances.length === 0 ? (
             <TableRow>
               <TableCell colSpan={8} className="text-center">
@@ -247,16 +285,38 @@ const Attendance = () => {
               </TableCell>
             </TableRow>
           ) : (
-            filteredAttendance.map((attendance, idx) => (
+            filteredAttendance.map((attendance) => (
               <TableRow key={attendance.workerId}>
-                <TableCell>{idx + 1}</TableCell>
                 <TableCell>{attendance.workers.name}</TableCell>
-                <TableCell>{attendance.login}</TableCell>
-                <TableCell>{attendance.logout}</TableCell>
-                <TableCell>{attendance.totalHours.toFixed(2)}</TableCell>
-                <TableCell>{attendance.overtimeHours.toFixed(2)}</TableCell>
-                <TableCell>{attendance.type}</TableCell>
-                <TableCell>
+                <TableCell className="text-center">
+                  {attendance.login}
+                </TableCell>
+                <TableCell className="text-center">
+                  {attendance.logout}
+                </TableCell>
+                <TableCell className="text-xs">
+                  {attendance.type === "ABSENT" && (
+                    <span className="px-4 py-1 bg-red-500 text-white shadow-lg rounded-full">
+                      A
+                    </span>
+                  )}
+                  {attendance.type === "PRESENT" && (
+                    <span className="px-4 py-1 bg-green-500 text-black shadow-lg rounded-full">
+                      P
+                    </span>
+                  )}
+                  {attendance.type === "HALFDAY" && (
+                    <span className="px-4 py-1 bg-yellow-500 text-black shadow-lg rounded-full">
+                      HD
+                    </span>
+                  )}
+                  {attendance.type === "OVERTIME" && (
+                    <span className="px-4 py-1 bg-blue-500 text-black shadow-lg rounded-full">
+                      OT
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="text-end">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
@@ -456,6 +516,31 @@ const Attendance = () => {
           )}
         </TableBody>
       </Table>
+      {userType === "ADMIN" && (
+        <div className="flex justify-center items-center lg:gap-x-6 gap-x-0 w-full lg:pb-20 pb-52">
+          <Button variant="ghost" onClick={goToPreviousDay}>
+            <ChevronLeft className="lg:w-6 lg:h-6 w-4 h-4" />
+          </Button>
+
+          <h4 className="lg:text-lg text-sm font-semibold">
+            {new Date(currentDay).toLocaleDateString("en-GB", {
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+            })}
+          </h4>
+
+          <Button
+            variant="ghost"
+            onClick={goToNextDay}
+            disabled={
+              new Date(currentDay).toDateString() === new Date().toDateString()
+            }
+          >
+            <ChevronRight className="lg:w-6 lg:h-6 w-4 h-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

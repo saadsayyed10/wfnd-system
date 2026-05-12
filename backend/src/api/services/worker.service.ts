@@ -1,12 +1,20 @@
 import prisma from "../../lib/prisma.orm";
+import { triggerNotification } from "../../lib/trigger-notification";
 
 export const addWorker = async (name: string, dailyPayment: number) => {
-  return await prisma.workers.create({
+  const worker = await prisma.workers.create({
     data: {
       name: name,
       daily_payment: dailyPayment,
     },
   });
+
+  await triggerNotification(
+    "Worker",
+    `New worker ${name} is added to the system with the daily payment of ₹ ${dailyPayment}`,
+  );
+
+  return worker;
 };
 
 export const fetchAllWorkers = async () => {
@@ -18,7 +26,7 @@ export const updateWorker = async (
   name: string,
   dailyPayment: number,
 ) => {
-  return await prisma.workers.update({
+  const worker = await prisma.workers.update({
     where: {
       id,
     },
@@ -27,12 +35,26 @@ export const updateWorker = async (
       daily_payment: dailyPayment,
     },
   });
+
+  await triggerNotification(
+    "Worker",
+    `Worker ${name}'s profile is updated to the system with the daily payment of ₹ ${dailyPayment}`,
+  );
+
+  return worker;
 };
 
 export const deleteWorker = async (id: string) => {
-  return await prisma.workers.delete({
+  const worker = await prisma.workers.delete({
     where: {
       id,
     },
   });
+
+  await triggerNotification(
+    "Worker",
+    `Worker ${worker.name} has been removed from the system`,
+  );
+
+  return worker;
 };

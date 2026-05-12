@@ -1,4 +1,3 @@
-import Navbar from "@/_components/Navbar";
 import {
   deletePayslipAPI,
   fetchPayslipAPI,
@@ -6,17 +5,6 @@ import {
 } from "@/api/payslip.api";
 import { fetchWorkersAPI } from "@/api/worker.api";
 import { Button } from "@/components/ui/button";
-// import {
-//   Dialog,
-//   DialogClose,
-//   DialogContent,
-//   DialogDescription,
-//   DialogFooter,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-// import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -211,131 +199,122 @@ const Payslip = () => {
   }, []);
 
   return (
-    <>
-      <Navbar />
-      <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
-        <div className="flex justify-between items-center w-full">
-          <Button variant="secondary" onClick={exportToExcel}>
-            Export to .xlsx
-          </Button>
-          <div />
-          <div className="flex justify-end items-end w-full flex-row gap-x-2">
-            {/* <Button disabled={payslipLoading} onClick={handleGeneratePayslip}>
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-4 lg:p-10 p-6">
+      <div className="flex justify-between items-center w-full">
+        <Button variant="secondary" onClick={exportToExcel}>
+          Export to .xlsx
+        </Button>
+        <div />
+        <div className="flex justify-end items-end w-full flex-row gap-x-2">
+          {/* <Button disabled={payslipLoading} onClick={handleGeneratePayslip}>
               {payslipLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 "Generate Payslip"
               )}
             </Button> */}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Generate Payslip</Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-sm">
-                <DialogHeader>
-                  <DialogTitle>Generate Payslip</DialogTitle>
-                  <DialogDescription>
-                    Generate payslips of workers for the week here. Click
-                    generate when you&apos;re done.
-                  </DialogDescription>
-                </DialogHeader>
-                <Input
-                  className="w-full"
-                  placeholder="Week start date of this month"
-                  type="number"
-                  value={startOfWeek}
-                  onChange={(e) => setStartOfWeek(e.target.value)}
-                />
-                <Input
-                  className="w-full"
-                  placeholder="Week end date of this month"
-                  type="number"
-                  value={endOfWeek}
-                  onChange={(e) => setEndOfWeek(e.target.value)}
-                />
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button
-                    disabled={payslipLoading}
-                    onClick={handleGeneratePayslip}
-                  >
-                    {payslipLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      "Generate"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            <Button
-              disabled={loading}
-              variant="destructive"
-              onClick={handleDeletePayslips}
-            >
-              {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Generate Payslip</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Generate Payslip</DialogTitle>
+                <DialogDescription>
+                  Generate payslips of workers for the week here. Click generate
+                  when you&apos;re done.
+                </DialogDescription>
+              </DialogHeader>
+              <Input
+                className="w-full"
+                placeholder="Week start date of this month"
+                type="number"
+                value={startOfWeek}
+                onChange={(e) => setStartOfWeek(e.target.value)}
+              />
+              <Input
+                className="w-full"
+                placeholder="Week end date of this month"
+                type="number"
+                value={endOfWeek}
+                onChange={(e) => setEndOfWeek(e.target.value)}
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button
+                  disabled={payslipLoading}
+                  onClick={handleGeneratePayslip}
+                >
+                  {payslipLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Generate"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button
+            disabled={loading}
+            variant="destructive"
+            onClick={handleDeletePayslips}
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+          </Button>
         </div>
-        <Table>
-          <TableCaption>
-            {payslipData.length > 0 &&
-              `Wage statement for period: ${weekStart.split("T")[0]} to ${weekEnd.split("T")[0]}`}
-          </TableCaption>
-          <TableHeader className="border">
-            <TableRow>
-              <TableHead>Sr No.</TableHead>
-              <TableHead>Worker</TableHead>
-              <TableHead>SUN</TableHead>
-              <TableHead>MON</TableHead>
-              <TableHead>TUE</TableHead>
-              <TableHead>WED</TableHead>
-              <TableHead>THU</TableHead>
-              <TableHead>FRI</TableHead>
-              <TableHead>SAT</TableHead>
-              <TableHead>O/T Hours</TableHead>
-              <TableHead>Total Days</TableHead>
-              <TableHead>Actual Day</TableHead>
-              <TableHead>Daily Payment</TableHead>
-              <TableHead>Total Wage</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="border">
-            {payslipData.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={14} align="center" className="lg:p-6">
-                  Please generate payslip on Saturday to view current
-                  week&apos;s data
-                </TableCell>
-              </TableRow>
-            ) : (
-              payslipData.map((payslip, idx) => (
-                <TableRow key={payslip.id}>
-                  <TableCell>{idx + 1}</TableCell>
-                  <TableCell>{payslip.workers.name}</TableCell>
-                  {payslip.payslip_data.map((pD, idx) => (
-                    <TableCell key={idx}>
-                      {typeMap[pD.type] ?? pD.type}
-                    </TableCell>
-                  ))}
-                  <TableCell>{formatHours(payslip.overtime_total)}</TableCell>
-                  <TableCell>{payslip.total_days}</TableCell>
-                  <TableCell>{payslip.actual_days.toFixed(2)}</TableCell>
-                  <TableCell>{payslip.workers.daily_payment}</TableCell>
-                  <TableCell>{payslip.weekly_wage}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
       </div>
-    </>
+      <Table>
+        <TableCaption>
+          {payslipData.length > 0 &&
+            `Wage statement for period: ${weekStart.split("T")[0]} to ${weekEnd.split("T")[0]}`}
+        </TableCaption>
+        <TableHeader className="border">
+          <TableRow>
+            <TableHead>Sr No.</TableHead>
+            <TableHead>Worker</TableHead>
+            <TableHead>SUN</TableHead>
+            <TableHead>MON</TableHead>
+            <TableHead>TUE</TableHead>
+            <TableHead>WED</TableHead>
+            <TableHead>THU</TableHead>
+            <TableHead>FRI</TableHead>
+            <TableHead>SAT</TableHead>
+            <TableHead>O/T Hours</TableHead>
+            <TableHead>Total Days</TableHead>
+            <TableHead>Actual Day</TableHead>
+            <TableHead>Daily Payment</TableHead>
+            <TableHead>Total Wage</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="border">
+          {payslipData.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={14} align="center" className="lg:p-6">
+                Please generate payslip on Saturday to view current week&apos;s
+                data
+              </TableCell>
+            </TableRow>
+          ) : (
+            payslipData.map((payslip, idx) => (
+              <TableRow key={payslip.id}>
+                <TableCell>{idx + 1}</TableCell>
+                <TableCell>{payslip.workers.name}</TableCell>
+                {payslip.payslip_data.map((pD, idx) => (
+                  <TableCell key={idx}>{typeMap[pD.type] ?? pD.type}</TableCell>
+                ))}
+                <TableCell>{formatHours(payslip.overtime_total)}</TableCell>
+                <TableCell>{payslip.total_days}</TableCell>
+                <TableCell>{payslip.actual_days.toFixed(2)}</TableCell>
+                <TableCell>{payslip.workers.daily_payment}</TableCell>
+                <TableCell>{payslip.weekly_wage}</TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

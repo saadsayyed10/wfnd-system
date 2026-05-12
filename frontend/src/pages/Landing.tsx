@@ -26,7 +26,7 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-neutral-100">
+    <div className="flex items-center justify-center min-h-screen bg-neutral-50">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-lg text-center space-y-6">
         <h1 className="text-2xl font-semibold tracking-tight">
           Welcome to Wood Furniture and Decore System
