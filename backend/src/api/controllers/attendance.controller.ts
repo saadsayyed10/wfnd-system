@@ -5,6 +5,7 @@ import {
   fetchDay,
   loginWorkerAttendence,
   logoutWorkerAttendance,
+  resetAttendance,
 } from "../services/attendance.service";
 import { getAuth } from "@clerk/express";
 
@@ -105,6 +106,28 @@ export const changeAttendenceStatusController = async (
 
     const attendance = await changeAttendenceStatus(id.toString(), type);
     console.log(`Worker attendance status changed`);
+    res.status(200).json({ attendance });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const resetAttendanceController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { id } = req.params;
+  try {
+    const { userId } = getAuth(req);
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: No logged in user found" });
+    }
+
+    const attendance = await resetAttendance(id.toString());
+    console.log(`Worker attendance reset`);
     res.status(200).json({ attendance });
   } catch (error: any) {
     console.log(error.message);

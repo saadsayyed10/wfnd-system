@@ -146,3 +146,31 @@ export const changeAttendenceStatus = async (
     },
   });
 };
+
+export const resetAttendance = async (id: string) => {
+  const attendance = await prisma.attendance.update({
+    where: {
+      id,
+    },
+    data: {
+      login: "-",
+      logout: "-",
+      totalHours: 0,
+      overtimeHours: 0,
+    },
+    select: {
+      workers: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  await triggerNotification(
+    "Attendance",
+    `Attendance reset for worker ${attendance.workers?.name}`,
+  );
+
+  return attendance;
+};

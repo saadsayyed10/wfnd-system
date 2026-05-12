@@ -5,6 +5,7 @@ import {
   fetchDayController,
   loginWorkerAttendenceController,
   logoutWorkerAttendenceController,
+  resetAttendanceController,
 } from "../controllers/attendance.controller";
 import { requireAuth } from "@clerk/express";
 
@@ -27,5 +28,6 @@ attendanceRoutes.put(
   requireAuth(),
   changeAttendenceStatusController,
 );
+attendanceRoutes.patch("/reset/:id", requireAuth(), resetAttendanceController);
 
 export default attendanceRoutes;
