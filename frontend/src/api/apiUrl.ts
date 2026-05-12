@@ -1,3 +1,3 @@
-const apiUrl = import.meta.env.PROD_VITE_API_URL || "http://localhost:3001/api";
+const apiUrl = "https://wfnd-system.up.railway.app/api";
 
 export default apiUrl;
