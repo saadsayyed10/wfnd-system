@@ -1,6 +1,7 @@
 import { AttendanceType } from "@prisma/client";
 import prisma from "../../lib/prisma.orm";
 import { getTotalHours } from "../../lib/total-hour";
+import { triggerNotification } from "../../lib/trigger-notification";
 
 export const createDay = async (date: Date) => {
   const workers = await prisma.workers.findMany();
@@ -46,15 +47,31 @@ export const fetchDay = async (date: string) => {
 };
 
 export const loginWorkerAttendence = async (id: string, login: string) => {
-  return await prisma.attendance.update({
+  const attendance = await prisma.attendance.update({
     where: {
       id,
     },
     data: {
       login: login,
       type: AttendanceType.PRESENT,
+      overtimeHours: 0,
+      totalHours: 0,
+    },
+    select: {
+      workers: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
+
+  await triggerNotification(
+    "Attendance",
+    `Worker ${attendance.workers?.name} was logged-in at ${login}`,
+  );
+
+  return attendance;
 };
 
 export const logoutWorkerAttendance = async (id: string, logout: string) => {
@@ -78,7 +95,7 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
     overtimeHours = totalHour - 10;
   }
 
-  return await prisma.attendance.update({
+  const logoutAttendance = await prisma.attendance.update({
     where: {
       id,
     },
@@ -88,7 +105,19 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
       type,
       overtimeHours,
     },
+    select: {
+      workers: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
+
+  await triggerNotification(
+    "Attendance",
+    `Worker ${logoutAttendance.workers?.name} was logged-out at ${logout}`,
+  );
 };
 
 export const changeAttendenceStatus = async (
