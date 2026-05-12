@@ -56,3 +56,11 @@ export const changeAttendanceStatusAPI = async (
     },
   );
 };
+
+export const resetAttendanceAPI = async (id: string, token: string) => {
+  return await axios.patch(`${apiUrl}/attendance/reset/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -4,6 +4,7 @@ import {
   fetchCurrentDayAPI,
   loginWorkerAPI,
   logoutWorkerAPI,
+  resetAttendanceAPI,
 } from "@/api/attendance.api";
 import { Button } from "@/components/ui/button";
 import {
@@ -161,6 +162,21 @@ const Attendance = () => {
 
       await changeAttendanceStatusAPI(id, type, token!);
       setType("");
+    } catch (error: any) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+      fetchAttendences();
+    }
+  };
+
+  const handleReset = async (id: string) => {
+    setLoading(true);
+    try {
+      const token = await getToken();
+
+      await resetAttendanceAPI(id, token!);
+      alert("Attendance reset is done");
     } catch (error: any) {
       console.log(error.message);
     } finally {
@@ -508,6 +524,11 @@ const Attendance = () => {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
+                      <DropdownMenuItem
+                        onClick={() => handleReset(attendance.id)}
+                      >
+                        Reset
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
