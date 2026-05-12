@@ -73,7 +73,7 @@ const Dashboard = () => {
   }
 
   return approval ? (
-    <div className="w-full flex flex-col gap-4 lg:gap-6 p-4 bg-neutral-100">
+    <div className="w-full flex flex-col gap-4 lg:gap-6 p-4 bg-neutral-50">
       {/* Top Section */}
       <div
         className="grid gap-4 

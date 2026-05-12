@@ -138,7 +138,7 @@ const Workers = () => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-14 lg:p-10 p-6 bg-neutral-100">
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-8 gap-y-14 lg:p-10 p-6 bg-neutral-50">
       <div className="flex justify-between items-center w-full">
         <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
           <Button

@@ -7,7 +7,7 @@ const Layout = () => {
     <>
       <Navbar />
       <MobileNavbar />
-      <div className="lg:pt-32 lg:pb-0 pb-52 bg-neutral-100">
+      <div className="lg:pt-32 lg:pb-0 pb-52 bg-neutral-50">
         <Outlet />
       </div>
     </>

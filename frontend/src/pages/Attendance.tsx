@@ -214,7 +214,7 @@ const Attendance = () => {
   );
 
   return (
-    <div className="flex justify-center items-center w-full flex-col lg:gap-y-12 gap-y-8 lg:p-10 p-4 bg-neutral-100">
+    <div className="flex justify-center items-center w-full flex-col lg:gap-y-12 gap-y-8 lg:p-10 p-4 bg-neutral-50">
       <div className="flex justify-between items-center w-full">
         <div className="flex justify-start items-center w-full lg:gap-x-2 gap-x-1">
           <Button
