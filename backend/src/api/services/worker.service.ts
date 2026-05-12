@@ -26,7 +26,7 @@ export const updateWorker = async (
   name: string,
   dailyPayment: number,
 ) => {
-  return await prisma.workers.update({
+  const worker = await prisma.workers.update({
     where: {
       id,
     },
@@ -35,12 +35,26 @@ export const updateWorker = async (
       daily_payment: dailyPayment,
     },
   });
+
+  await triggerNotification(
+    "Worker",
+    `Worker ${name}'s profile is updated to the system with the daily payment of ₹ ${dailyPayment}`,
+  );
+
+  return worker;
 };
 
 export const deleteWorker = async (id: string) => {
-  return await prisma.workers.delete({
+  const worker = await prisma.workers.delete({
     where: {
       id,
     },
   });
+
+  await triggerNotification(
+    "Worker",
+    `Worker ${worker.name} has been removed from the system`,
+  );
+
+  return worker;
 };
