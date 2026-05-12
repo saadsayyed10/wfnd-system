@@ -243,7 +243,7 @@ const Attendance = () => {
         <Notification />
       </div>
 
-      <div className="flex lg:justify-center lg:items-center justify-start items-start w-full lg:gap-x-10 gap-x-1.5">
+      <div className="flex lg:justify-center lg:items-center justify-start items-start w-full lg:gap-x-10 gap-x-2">
         {weekDays.map((day, i) => {
           const today = new Date();
           const isFuture =
@@ -271,8 +271,8 @@ const Attendance = () => {
         <TableHeader>
           <TableRow>
             <TableHead>Worker</TableHead>
-            <TableHead>Login Time</TableHead>
-            <TableHead>Logout Time</TableHead>
+            <TableHead className="text-center">Login Time</TableHead>
+            <TableHead className="text-center">Logout Time</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-end">Actions</TableHead>
           </TableRow>
