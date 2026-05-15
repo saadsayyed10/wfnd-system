@@ -64,3 +64,20 @@ export const resetAttendanceAPI = async (id: string, token: string) => {
     },
   });
 };
+
+export const fetchAttendancePerWorker = async (
+  workerId: string,
+  startDate: string,
+  endDate: string,
+  token: string,
+) => {
+  return await axios.get(`${apiUrl}/attendance/worker/${workerId}`, {
+    params: {
+      startDate,
+      endDate,
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -35,6 +35,7 @@ import { useApproval } from "@/hooks/useApproval";
 import { getToken } from "@clerk/react";
 import { Loader2, MoreHorizontal, Plus, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Workers {
   id: string;
@@ -306,6 +307,9 @@ const Workers = () => {
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
+                        <Link to={`/attendance/worker/${worker.id}`}>
+                          <DropdownMenuItem>Get attendance</DropdownMenuItem>
+                        </Link>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

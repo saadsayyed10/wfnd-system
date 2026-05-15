@@ -205,7 +205,17 @@ export const fetchAttendancePerWorker = async (
 ) => {
   const timeZone = "T18:45:00.000Z";
 
-  return await prisma.attendance.findMany({
+  const worker = await prisma.workers.findUnique({
+    where: {
+      id: workerId,
+    },
+    select: {
+      name: true,
+      daily_payment: true,
+    },
+  });
+
+  const attendance = await prisma.attendance.findMany({
     where: {
       workerId,
       date: {
@@ -217,4 +227,6 @@ export const fetchAttendancePerWorker = async (
       date: "asc",
     },
   });
+
+  return { worker, attendance };
 };

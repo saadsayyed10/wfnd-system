@@ -154,12 +154,12 @@ export const fetchAttendancePerWorkerController = async (
         .json({ error: "Unauthorized: No logged in user found" });
     }
 
-    const attendance = await fetchAttendancePerWorker(
+    const { worker, attendance } = await fetchAttendancePerWorker(
       workerId.toString(),
       startDate,
       endDate,
     );
-    res.status(200).json({ total: attendance.length, attendance });
+    res.status(200).json({ worker, attendance });
   } catch (error: any) {
     console.log(error.message);
     return res.status(500).json({ error: error.message });
