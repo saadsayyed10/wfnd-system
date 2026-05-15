@@ -41,7 +41,9 @@ export const fetchDay = async (date: string) => {
       },
     },
     orderBy: {
-      id: "asc",
+      workers: {
+        name: "asc",
+      },
     },
   });
 };
@@ -54,6 +56,7 @@ export const loginWorkerAttendence = async (id: string, login: string) => {
     data: {
       login: login,
       type: AttendanceType.PRESENT,
+      logout: "-",
       overtimeHours: 0,
       totalHours: 0,
     },
@@ -82,17 +85,37 @@ export const logoutWorkerAttendance = async (id: string, logout: string) => {
   });
 
   let type;
-  let overtimeHours;
   let totalHour = getTotalHours(attendance?.login!, logout);
 
-  if (totalHour <= 8 && totalHour > 0) {
+  const parseTime = (timeStr: string, addDay = false): Date => {
+    const [time, modifier] = timeStr.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    if (addDay) date.setDate(date.getDate() + 1);
+    return date;
+  };
+
+  const overtimeThreshold = parseTime("8:00 PM");
+
+  const logoutModifier = logout.split(" ")[1]; // 'AM' or 'PM'
+  const isMidnightCrossover = logoutModifier === "AM" && totalHour > 12;
+  const logoutTime = parseTime(logout, isMidnightCrossover);
+
+  const overtimeHours =
+    logoutTime > overtimeThreshold
+      ? (logoutTime.getTime() - overtimeThreshold.getTime()) / (1000 * 60 * 60)
+      : 0;
+
+  if (totalHour <= 6 && totalHour > 0) {
     type = AttendanceType.HALFDAY;
   } else if (totalHour == 0) {
     type = AttendanceType.ABSENT;
     totalHour = 0;
-  } else if (totalHour > 11) {
+  } else if (overtimeHours > 0) {
     type = AttendanceType.OVERTIME;
-    overtimeHours = totalHour - 10;
   }
 
   const logoutAttendance = await prisma.attendance.update({

@@ -18,7 +18,11 @@ export const addWorker = async (name: string, dailyPayment: number) => {
 };
 
 export const fetchAllWorkers = async () => {
-  return await prisma.workers.findMany();
+  return await prisma.workers.findMany({
+    orderBy: {
+      created_at: "asc",
+    },
+  });
 };
 
 export const updateWorker = async (
