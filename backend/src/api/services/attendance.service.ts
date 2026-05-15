@@ -197,3 +197,24 @@ export const resetAttendance = async (id: string) => {
 
   return attendance;
 };
+
+export const fetchAttendancePerWorker = async (
+  workerId: string,
+  startDate: string,
+  endDate: string,
+) => {
+  const timeZone = "T18:45:00.000Z";
+
+  return await prisma.attendance.findMany({
+    where: {
+      workerId,
+      date: {
+        gte: `${startDate}${timeZone}`,
+        lte: `${endDate}${timeZone}`,
+      },
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+};

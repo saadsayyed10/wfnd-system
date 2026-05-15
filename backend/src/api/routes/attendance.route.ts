@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   changeAttendenceStatusController,
   createDayController,
+  fetchAttendancePerWorkerController,
   fetchDayController,
   loginWorkerAttendenceController,
   logoutWorkerAttendenceController,
@@ -13,6 +14,11 @@ const attendanceRoutes = Router();
 
 attendanceRoutes.post("/create-day", createDayController);
 attendanceRoutes.get("/day/:date", requireAuth(), fetchDayController);
+attendanceRoutes.get(
+  "/worker/:workerId",
+  requireAuth(),
+  fetchAttendancePerWorkerController,
+);
 attendanceRoutes.put(
   "/day/login/:id",
   requireAuth(),

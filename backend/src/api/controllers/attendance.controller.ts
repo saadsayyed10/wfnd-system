@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   changeAttendenceStatus,
   createDay,
+  fetchAttendancePerWorker,
   fetchDay,
   loginWorkerAttendence,
   logoutWorkerAttendance,
@@ -129,6 +130,36 @@ export const resetAttendanceController = async (
     const attendance = await resetAttendance(id.toString());
     console.log(`Worker attendance reset`);
     res.status(200).json({ attendance });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const fetchAttendancePerWorkerController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { workerId } = req.params;
+  const { startDate, endDate } = req.query as {
+    startDate: string;
+    endDate: string;
+  };
+
+  try {
+    const { userId } = getAuth(req);
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: No logged in user found" });
+    }
+
+    const attendance = await fetchAttendancePerWorker(
+      workerId.toString(),
+      startDate,
+      endDate,
+    );
+    res.status(200).json({ total: attendance.length, attendance });
   } catch (error: any) {
     console.log(error.message);
     return res.status(500).json({ error: error.message });
